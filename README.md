@@ -120,7 +120,7 @@ frame 10 feature를 3px 이내의 Gaussian 투영과 연결하고 렌더 깊이�
 
 ## 백업
 
-독립 Git 저장소는 `/workspace/new4dgs`입니다. 데이터/checkpoint/render/비밀정보는 Git에서 제외했습니다. **원격 저장소 `https://github.com/andy4040/new4dgs`를 확인하고 origin으로 연결했습니다.** 원격의 초기 README commit도 로컬 이력과 병합했습니다. 현재 이 Vast에는 HTTPS/SSH GitHub 인증이 없어 push가 실패했습니다. **원격 코드 백업은 아직 미완료**이며, 인증 후 `git push -u origin main`이 필요합니다.
+독립 Git 저장소는 `/workspace/new4dgs`입니다. 데이터/checkpoint/render/비밀정보는 Git에서 제외했습니다. **원격 저장소 `https://github.com/andy4040/new4dgs`를 확인하고 origin으로 연결했습니다.** 원격의 초기 README commit도 로컬 이력과 병합했습니다. 사용자 인증 후 **GitHub main으로 코드 push를 완료하고 원격 commit을 확인했습니다.** 코드·설정·문서·수치 보고서는 GitHub에 보존됩니다. 데이터·checkpoint·렌더 결과의 외부 백업은 별도이며 아직 미완료입니다.
 
 **이 `/workspace`는 영구 볼륨이 아닙니다. 로컬 commit, git bundle, 다운로드 묶음 모두 이 인스턴스를 삭제하면 함께 사라집니다.** 별도 영구 저장 위치도 제공되지 않았습니다. `scripts/export_backup.py`가 `/workspace/new4dgs-backup.tar.gz`와 SHA256을 만듭니다. 사용자 PC로 반드시 내려받거나 영구 저장소로 복사해야 합니다.
 

@@ -12,8 +12,14 @@ root=Path(__file__).resolve().parents[1];dest=Path(a.out).resolve();dest.parent.
 status=subprocess.check_output(['git','-C',str(root),'status','--porcelain'],text=True)
 if status.strip():raise SystemExit('Commit all source/report changes before exporting; refusing stale source archive.')
 commit=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()
+# Check the advertised remote tip; local tracking refs alone are not evidence.
+try:
+ remote_tip=subprocess.check_output(['git','-C',str(root),'ls-remote','origin','refs/heads/main'],text=True,timeout=30).split()
+ pushed=bool(remote_tip) and remote_tip[0]==commit
+except (subprocess.SubprocessError,OSError):
+ pushed=False
 selected=['synthetic','fixture_fm_rgb_v2','fixture_cuda','fixture_baseline','fixture_reloaded','fixture_tracks','fixture_appearance','n3dv_attempt','coffee_inventory','coffee_fm_rgb','coffee_fm_rgb_v2','coffee_rgb','coffee_fm_persistent','coffee_canonical_4dgs']
-manifest={'commit':commit,'remote_push_succeeded':False,'external_artifact_backup_succeeded':False,
+manifest={'commit':commit,'remote_push_succeeded':pushed,'external_artifact_backup_succeeded':False,
           'note':'Download or copy off this nonpersistent Vast instance before deletion. No raw data included.','files':[]}
 with tempfile.TemporaryDirectory(prefix='new4dgs_export_') as tmp:
  tmp=Path(tmp);source=tmp/'source.tar';bundle=tmp/'new4dgs.git.bundle'
@@ -31,4 +37,4 @@ with tempfile.TemporaryDirectory(prefix='new4dgs_export_') as tmp:
     tar.add(f,arcname=rel)
   m=tmp/'MANIFEST.json';m.write_text(json.dumps(manifest,indent=2));tar.add(m,arcname='MANIFEST.json')
 sha=hashlib.sha256(dest.read_bytes()).hexdigest();Path(str(dest)+'.sha256').write_text(f'{sha}  {dest.name}\n')
-print(json.dumps({'archive':str(dest),'bytes':dest.stat().st_size,'sha256':sha,'source_commit':commit,'remote_push_succeeded':False,'external_backup_succeeded':False},indent=2))
+print(json.dumps({'archive':str(dest),'bytes':dest.stat().st_size,'sha256':sha,'source_commit':commit,'remote_push_succeeded':pushed,'external_backup_succeeded':False},indent=2))

@@ -3,7 +3,11 @@
   "public": true,
   "remote_initial_commit": "d0b53dd135af98682bc48a6b88e142fd30d9ca03",
   "initial_history_merged": true,
-  "remote_push_succeeded": false,
-  "failure": "HTTPS username unavailable with terminal prompts disabled; no configured token, credential helper authentication or SSH identity found",
-  "next_action": "Authenticate GitHub on this Vast instance, then git push -u origin main"
+  "remote_push_succeeded": true,
+  "next_action": "Preserve checkpoint/render artifact bundle outside this instance; code is backed up on GitHub.",
+  "authenticated_user": "andy4040",
+  "verified_uploaded_commit": "e1390b1be3003352882fa76ec98efb88a55ae5b5",
+  "verified_at_utc": "2026-09-23T07:00:05.115572+00:00",
+  "external_artifact_backup_succeeded": false,
+  "previous_failure": "HTTPS username unavailable with terminal prompts disabled; no configured token, credential helper authentication or SSH identity found"
 }

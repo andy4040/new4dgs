@@ -13,10 +13,10 @@
     "official coffee_martini download, ZIP CRC and local SHA256",
     "actual calibration inventory: 18 cameras, 17 train, 300 frames, 30 FPS",
     "actual N3DV four-way smoke comparison and fixed-ID visualizations",
-    "zero forbidden training/triangulation accesses in all four actual runs"
+    "zero forbidden training/triangulation accesses in all four actual runs",
+    "GitHub code push completed; remote main commit verified after user authentication"
   ],
   "failed_or_blocked": [
-    "remote git backup: origin and initial history verified; push failed because GitHub HTTPS/SSH credentials are absent",
     "off-instance artifact backup: persistent destination not supplied",
     "all actual endpoint RGB quality gates failed; results explicitly labeled inaccurate-endpoint smoke"
   ],
@@ -34,7 +34,7 @@
     "long research configuration",
     "actual N3DV masked tracking and temporal appearance experiments"
   ],
-  "remote_push_succeeded": false,
+  "remote_push_succeeded": true,
   "material_correspondence_proven": false,
   "remote_url": "https://github.com/andy4040/new4dgs"
 }
