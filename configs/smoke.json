@@ -62,5 +62,12 @@
   "gpu_hourly_usd": null,
   "triangulation_width": 640,
   "upstream_path": "../4DGaussians",
-  "renderer": "reference"
+  "renderer": "reference",
+  "early_stopping": {
+    "enabled": true,
+    "eval_interval": 1000,
+    "patience": 5,
+    "min_delta": 0.0001,
+    "min_steps": 2000
+  }
 }

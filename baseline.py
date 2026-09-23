@@ -3,6 +3,8 @@ Controlled fixed-count/SH0 baseline, not a claim to reproduce published full rec
 Upstream source is imported from a pinned sibling checkout, never modified.
 """
 import argparse
+import copy
+from stopping import make_stopper,stopping_config
 import json
 from pathlib import Path
 import random
@@ -57,10 +59,27 @@ def state(model,t):
     return x,cov,color,o.sigmoid().squeeze(-1)
 
 
+def restore_capture(model,snapshot):
+    (model.active_sh_degree,xyz,deformation,table,dc,rest,scaling,rotation,opacity,radii,accum,denom,optimizer,model.spatial_lr_scale)=snapshot
+    with torch.no_grad():
+        for name,value in [('_xyz',xyz),('_features_dc',dc),('_features_rest',rest),('_scaling',scaling),('_rotation',rotation),('_opacity',opacity)]:
+            getattr(model,name).copy_(value)
+    model._deformation.load_state_dict(deformation);model._deformation_table=table
+    model.max_radii2D=radii;model.xyz_gradient_accum=accum;model.denom=denom
+    model.optimizer.load_state_dict(optimizer)
+
+
 def run_baseline(data,reference,endpoint,cfg,out,timings,start):
     if cfg['appearance_time_rank'] or cfg['track_weight']:raise ValueError('Baseline first comparison uses fixed appearance, no tracking')
     tick=time.perf_counter();model,hidden=initialize(reference,cfg,data.extent)
-    history=[]
+    history=[];sc=stopping_config(cfg);stopper=make_stopper(cfg);best=None;monitor=[];reason='max_steps'
+    @torch.no_grad()
+    def monitored_rgb():
+        values=[]
+        for f in cfg['train_frames']:
+            xx,cc,co,op=state(model,normalized_time(f))
+            for n in data.train_cameras:values.append(float((render(xx,cc,co,op,data.camera(n,'cuda'))['rgb']-data.image(n,f).cuda()).abs().mean()))
+        return float(np.mean(values))
     for i in range(cfg['trajectory_steps']):
         model.update_learning_rate(i)
         frames=[f for f in cfg['train_frames'] if f not in (10,30)]+[10,30]
@@ -70,6 +89,15 @@ def run_baseline(data,reference,endpoint,cfg,out,timings,start):
         reg=model.compute_regulation(hidden.time_smoothness_weight,hidden.l1_time_planes,hidden.plane_tv_weight)
         loss=rgb+reg;model.optimizer.zero_grad();loss.backward();model.optimizer.step()
         history.append({'step':i,'frame':frame,'rgb_l1':float(rgb.detach()),'regularization':float(reg.detach())})
+        if sc['enabled'] and ((i+1)%sc['eval_interval']==0 or i+1==cfg['trajectory_steps']):
+            value=monitored_rgb();improved,stop=stopper.update(value,i+1);monitor.append({'step':i+1,'train_rgb_l1':value})
+            if improved:
+                best=copy.deepcopy(model.capture());torch.save(best,out/'best_baseline.pt')
+            if stop:reason='plateau';break
+    if best is not None:
+        # GaussianModel is not nn.Module; restore tensors and deformation state in place.
+        restore_capture(model,best)
+    (out/'early_stopping.json').write_text(json.dumps(dict(reason=reason,monitor=monitor,executed_steps=len(history),**stopper.report()) if sc['enabled'] else {'enabled':False},indent=2))
     torch.cuda.synchronize();timings['baseline_training']=time.perf_counter()-tick
     data.save_audit(out/'training_access.json')
     torch.save(model.capture(),out/'baseline.pt')

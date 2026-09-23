@@ -1,5 +1,7 @@
 """Training-only SIFT triangulation and endpoint RGB optimization."""
 import math
+import copy
+from stopping import make_stopper,stopping_config
 import itertools
 import cv2
 import numpy as np
@@ -86,7 +88,11 @@ def position_lr(cfg,step,extent):
 def optimize_endpoint(data,frame,model,cfg):
     opt=torch.optim.Adam([{'params':[model.xyz],'lr':position_lr(cfg,0,data.extent)},
         {'params':[model.log_scale,model.lower,model.color_logits,model.opacity_logits],'lr':cfg['endpoint_other_lr']}])
-    history=[]
+    history=[];monitor=[];sc=stopping_config(cfg);stopper=make_stopper(cfg)
+    best=None;reason='max_steps'
+    @torch.no_grad()
+    def monitored_loss():
+        return float(torch.stack([(render(model.xyz,model.covariance(),model.color(),model.opacity(),data.camera(n,model.xyz.device))['rgb']-data.image(n,frame).to(model.xyz.device)).abs().mean() for n in data.train_cameras]).mean())
     for i in range(cfg['endpoint_steps']):
         opt.param_groups[0]['lr']=position_lr(cfg,i,data.extent)
         name=data.train_cameras[i%len(data.train_cameras)]
@@ -94,13 +100,19 @@ def optimize_endpoint(data,frame,model,cfg):
         out=render(model.xyz,model.covariance(),model.color(),model.opacity(),data.camera(name,model.xyz.device))
         loss=(out['rgb']-target).abs().mean()
         opt.zero_grad();loss.backward();opt.step();history.append(float(loss.detach()))
+        if sc['enabled'] and ((i+1)%sc['eval_interval']==0 or i+1==cfg['endpoint_steps']):
+            value=monitored_loss();improved,stop=stopper.update(value,i+1)
+            monitor.append({'step':i+1,'train_l1':value})
+            if improved:best=copy.deepcopy(model.state_dict())
+            if stop:reason='plateau';break
+    if best is not None:model.load_state_dict(best)
     with torch.no_grad():
         errors=[]; coverages=[]
         for name in data.train_cameras:
             out=render(model.xyz,model.covariance(),model.color(),model.opacity(),data.camera(name,model.xyz.device))
             errors.append(float((out['rgb']-data.image(name,frame).to(model.xyz.device)).abs().mean()))
             coverages.append(float((out['alpha']>.1).float().mean()))
-    return {'train_l1':float(np.mean(errors)),'coverage_gt_0_1':float(np.mean(coverages)),
+    return {'early_stopping':dict(reason=reason,executed_steps=len(history),monitor=monitor,**stopper.report()) if sc['enabled'] else {'enabled':False},'train_l1':float(np.mean(errors)),'coverage_gt_0_1':float(np.mean(coverages)),
             'loss_history':history,'geometry_verified':False,
             'passes_rgb_gate':float(np.mean(errors))<=cfg['endpoint_max_l1'],
             'note':'RGB gate is necessary, not proof of accurate depth or material identity.'}
@@ -119,3 +131,30 @@ def initial_scales(xyz,extent,cfg):
     if cfg.get('initial_scale_max_extent_ratio') is not None:
         scales=np.minimum(scales,extent*cfg['initial_scale_max_extent_ratio'])
     return torch.tensor(scales,dtype=xyz.dtype,device=xyz.device)
+
+
+@torch.no_grad()
+def split_gaussians(model, scores, fraction=.25):
+    """Split high-score Gaussians along principal covariance axis; explicit ancestry.
+
+    Parent is retired, two new IDs assigned, covariance shrunk along split axis.
+    Moment preservation is approximate; rendering is reoptimized after splitting.
+    """
+    n=len(model.xyz);count=max(1,int(n*fraction));idx=scores.topk(min(count,n)).indices
+    keep=torch.ones(n,dtype=torch.bool,device=model.xyz.device);keep[idx]=False
+    factor=model.factor().double();cov=factor@factor.transpose(-1,-2);vals,vecs=torch.linalg.eigh(cov[idx])
+    delta=vecs[:,:,-1]*vals[:,-1:].sqrt()*.5
+    children=torch.cat([model.xyz[idx]-delta,model.xyz[idx]+delta]).to(model.xyz.dtype)
+    cc=cov[idx]-delta[:,:,None]*delta[:,None,:]
+    xyz=torch.cat([model.xyz[keep],children]);rgb=torch.cat([model.color()[keep],model.color()[idx],model.color()[idx]])
+    covariance=torch.cat([cov[keep],cc,cc]);jitter=covariance.diagonal(dim1=-2,dim2=-1).sum(-1).clamp_min(1.)*1e-10
+    L=torch.linalg.cholesky(covariance+torch.eye(3,device=cov.device,dtype=cov.dtype)*jitter[:,None,None]).to(model.xyz.dtype)
+    result=Gaussians(xyz,rgb,1.).to(xyz.device)
+    result.log_scale.copy_(L.diagonal(dim1=-2,dim2=-1).log())
+    result.lower.copy_(L[:,[1,2,2],[0,0,1]])
+    child_opacity=1-(1-model.opacity()[idx]).sqrt()
+    result.opacity_logits.copy_(torch.logit(torch.cat([model.opacity()[keep],child_opacity,child_opacity]).clamp(1e-5,1-1e-5)))
+    next_id=int(model.ids.max())+1;new_ids=torch.arange(next_id,next_id+2*len(idx),device=xyz.device)
+    parents=model.ids[idx].repeat(2)
+    result.ids.copy_(torch.cat([model.ids[keep],new_ids]));result.parent_ids.copy_(torch.cat([model.parent_ids[keep],parents]))
+    return result,dict(retired_ids=model.ids[idx].cpu().tolist(),child_ids=new_ids.cpu().tolist(),parent_ids=parents.cpu().tolist())

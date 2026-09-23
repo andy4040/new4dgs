@@ -1,5 +1,7 @@
 """Stage A endpoints, optional B FM, C interval RGB, evaluation and artifacts."""
 import argparse
+import copy
+from stopping import make_stopper,stopping_config
 import json
 import time
 from pathlib import Path
@@ -90,8 +92,19 @@ def execute(args,cfg,out,start):
     tick=time.perf_counter();fm=None
     if cfg['variant'] in ('fm_rgb','fm_persistent'):
         fm=FlowMatching(x0,g.covariance(),e.xyz,e.covariance(),cfg)
-        for _ in range(cfg['fm_steps']):
+        fm_sc=stopping_config(cfg);fm_stop=make_stopper(cfg);fm_best=None;fm_monitor=[];fm_reason='max_steps'
+        for j in range(cfg['fm_steps']):
             loss=fm.loss(velocity);opt.zero_grad();loss.backward();opt.step()
+            if fm_sc['enabled'] and ((j+1)%fm_sc['eval_interval']==0 or j+1==cfg['fm_steps']):
+                # Fixed random samples for comparable FM diagnostics, preserving training RNG.
+                with torch.random.fork_rng(devices=[torch.cuda.current_device()] if device.startswith('cuda') else []),torch.no_grad():
+                    torch.manual_seed(cfg['seed']+12345);value=float(fm.loss(velocity))
+                improved,stop=fm_stop.update(value,j+1);fm_monitor.append({'step':j+1,'fixed_sample_fm_loss':value})
+                if improved:
+                    fm_best=copy.deepcopy(velocity.state_dict());torch.save({'velocity':fm_best,'optimizer':opt.state_dict(),'step':j+1},out/'best_fm.pt')
+                if stop:fm_reason='plateau';break
+        if fm_best is not None:velocity.load_state_dict(fm_best)
+        dump(out/'fm_early_stopping.json',dict(reason=fm_reason,monitor=fm_monitor,**fm_stop.report()) if fm_sc['enabled'] else {'enabled':False})
         dump(out/'sinkhorn.json',fm.diagnostics)
     sync();timings['coupling_and_fm']=time.perf_counter()-tick
     tick=time.perf_counter()
@@ -101,7 +114,17 @@ def execute(args,cfg,out,start):
     appearance=Appearance(len(x0),cfg['appearance_time_rank'],device)
     opt=torch.optim.Adam([{'params':velocity.parameters(),'lr':cfg['velocity_lr']},
         {'params':[g.color_logits,g.opacity_logits,*appearance.parameters()],'lr':cfg['appearance_lr']}])
-    history=[];tick=time.perf_counter()
+    history=[];tick=time.perf_counter();sc=stopping_config(cfg);stopper=make_stopper(cfg)
+    monitor=[];best=None;stop_reason='max_steps'
+    @torch.no_grad()
+    def monitored_rgb():
+        # Fixed complete training set, independent of random optimization cameras.
+        values=[]
+        for f in cfg['train_frames']:
+            tt=normalized_time(f);xx,cc=flow(velocity,x0,L0,tt,cfg['ode_method'],cfg['ode_step']);co,op=appearance(g,tt)
+            for name in data.train_cameras:
+                values.append(float((render(xx,cc,co,op,data.camera(name,device))['rgb']-data.image(name,f).to(device)).abs().mean()))
+        return float(np.mean(values))
     for i in range(cfg['trajectory_steps']):
         # Deterministic coverage, all internal training times first; multi-camera RGB.
         frames=[f for f in cfg['train_frames'] if f not in (10,30)]+[10,30]
@@ -128,6 +151,16 @@ def execute(args,cfg,out,start):
         if not np.isfinite(grad): raise FloatingPointError('Nonfinite velocity gradient')
         opt.step()
         history.append({'step':i,'frame':frame,'rgb_l1':float(rgb.detach()),'acceleration':float(reg.detach()),'track':float(tl.detach()),'fm':float(fml.detach()),'terminal_chamfer':float(terminal.detach()),'velocity_grad_norm':grad})
+        if sc['enabled'] and ((i+1)%sc['eval_interval']==0 or i+1==cfg['trajectory_steps']):
+            value=monitored_rgb();improved,stop=stopper.update(value,i+1);monitor.append({'step':i+1,'train_rgb_l1':value})
+            if improved:
+                best=copy.deepcopy({'velocity':velocity.state_dict(),'reference':g.state_dict(),'appearance':appearance.state_dict(),'optimizer':opt.state_dict(),'step':i+1,'config':cfg})
+                torch.save(best,out/'best_trajectory.pt')
+            dump(out/'early_stopping.json',dict(reason='running',monitor=monitor,**stopper.report()))
+            if stop:stop_reason='plateau';break
+    if best is not None:
+        velocity.load_state_dict(best['velocity']);g.load_state_dict(best['reference']);appearance.load_state_dict(best['appearance'])
+    dump(out/'early_stopping.json',dict(enabled=sc['enabled'],reason=stop_reason,executed_steps=len(history),monitor=monitor,**stopper.report()) if sc['enabled'] else {'enabled':False})
     sync();timings['interval_training']=time.perf_counter()-tick
     data.save_audit(out/'training_access.json')
     dump(out/'losses.json',history)

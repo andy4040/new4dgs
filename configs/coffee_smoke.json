@@ -64,5 +64,12 @@
   "upstream_path": "../4DGaussians",
   "renderer": "cuda",
   "initial_scale_method": "knn3",
-  "initial_scale_max_extent_ratio": 0.1
+  "initial_scale_max_extent_ratio": 0.1,
+  "early_stopping": {
+    "enabled": true,
+    "eval_interval": 1000,
+    "patience": 5,
+    "min_delta": 0.0001,
+    "min_steps": 2000
+  }
 }

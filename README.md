@@ -155,3 +155,49 @@ causal ablation. A low RGB loss alone does not validate 3D geometry.
 Completed experiment: [extended keyframe report](reports/coffee_keyframe_10k.md).
 At equal 384x288 evaluation resolution, frame-10 cam00 PSNR improved from
 9.42 to 25.63 dB. This is static reconstruction, not an improved motion result.
+
+### PSNR target and automatic plateau stopping
+
+```bash
+/venv/main/bin/python train_keyframe.py \
+  --config configs/coffee_keyframe_30db.json \
+  --resume runs/coffee_keyframe_10k/latest.pt \
+  --out runs/coffee_keyframe_30db_new
+```
+
+The target is **mean per-camera PSNR >= 30 dB across all 17 frame-10 training
+cameras at 384x288**. It is not cam00 PSNR, nor a depth/trajectory target. The
+held-out camera is never used for checkpoint selection; standalone training
+reads it only if `--evaluate-heldout` is explicitly supplied. Runs below target
+report `target_reached: false`, even when they finish normally.
+
+The target experiment resumes learned geometry, resets Adam, and minimizes
+MSE + 0.1 L1. It splits high accumulated position-gradient Gaussians along their
+principal covariance axis every 1000 steps through step 8000, up to 100,000
+Gaussians. Retired parent IDs and newly allocated child IDs are saved in
+`lineage.json`; after geometry training, the resulting set can be frozen for
+trajectory learning. Split covariance is factorized in float64 with relative
+jitter. This is an approximate split followed by reoptimization, not an exact
+image-preserving transformation or material-point correspondence.
+
+`early_stopping` controls `enabled`, `eval_interval`, `patience`, `min_delta`,
+and `min_steps`. Default later-stage settings: evaluate every 1000 updates,
+minimum 2000 updates, stop after 5 evaluations without cumulative L1 improvement
+of 0.0001. Small improvements accumulate against the last significant-improvement
+anchor. The actual lowest-loss state is saved even if improvement is below
+`min_delta`, and restored for final evaluation. A step cap is a separate stop
+reason (`max_steps`), never labeled convergence.
+
+- Endpoint stage: mean RGB L1 over all training cameras at that endpoint.
+- FM: fixed seeded sample loss (training RNG preserved).
+- ODE and canonical baseline: mean RGB L1 over the complete fixed training
+  camera/time grid; no held-out images. This monitors reconstruction, not the
+  stochastic regularized training objective.
+- Standalone 30 dB keyframe: mean per-camera MSE plateau, minimum 12000 additional
+  steps, patience 5 checks, absolute `min_delta=0.000002`. PSNR threshold is
+  independently checked every 1000 steps. `best.pt` selects highest mean PSNR;
+  `best_loss.pt` selects lowest mean MSE; those need not be the same checkpoint.
+
+All evaluation overhead is included in training-stage wall time. Splitting resets
+plateau patience and Adam because parameter shapes change. A resumed keyframe
+run also resets its optimizer/schedule/stopper and reports *additional* steps.
