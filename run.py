@@ -12,7 +12,7 @@ from geometry import Gaussians,triangulate,optimize_endpoint
 from transport import Velocity,FlowMatching,flow,jacobian
 from covariance_renderer import render
 from evaluation import image_metrics,save_image,visualize,approximation_error
-from tracks import build_tracks,track_loss
+from tracks import build_tracks,track_loss,training_track_metrics
 
 
 class Appearance(nn.Module):
@@ -36,6 +36,7 @@ def main(args):
     if args.variant:cfg['variant']=args.variant
     if args.steps is not None:cfg['trajectory_steps']=args.steps
     if args.device:cfg['device']=args.device
+    if args.renderer:cfg['renderer']=args.renderer
     if args.appearance_rank is not None:cfg['appearance_time_rank']=args.appearance_rank
     if args.track_masks:cfg['track_weight']=args.track_weight
     out=Path(args.out)
@@ -151,7 +152,7 @@ def execute(args,cfg,out,start):
     sync();timings['evaluation_and_visualization']=time.perf_counter()-tick
     elapsed=time.perf_counter()-start;rate=cfg.get('gpu_hourly_usd')
     dump(out/'metrics.json',{'image':summary,'per_image':rows,'distribution':distribution,'trajectory_3d_error':None,
-        'track_training_observations':len(observations),'gaussian_approximation':approximation,
+        'track_training_observations':len(observations),'track_consistency':training_track_metrics(positions,observations,data),'gaussian_approximation':approximation,
         'smoke_only':cfg['smoke_only'],'endpoint_rgb_gate_failed':inaccurate,'endpoint_geometry_verified':False,
         'timing_seconds':timings,'total_seconds_including_preprocessing':elapsed,'allocated_gpu_hours':elapsed/3600,
         'estimated_usd':None if rate is None else elapsed/3600*rate,
@@ -164,5 +165,5 @@ def execute(args,cfg,out,start):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--config',default='configs/smoke.json');p.add_argument('--data');p.add_argument('--out',required=True)
     p.add_argument('--variant',choices=['rgb','fm_rgb','fm_persistent','canonical_4dgs']);p.add_argument('--device');p.add_argument('--steps',type=int)
-    p.add_argument('--inspect',action='store_true');p.add_argument('--track-masks');p.add_argument('--track-weight',type=float,default=.01);p.add_argument('--appearance-rank',type=int)
+    p.add_argument('--renderer',choices=['reference','cuda']);p.add_argument('--inspect',action='store_true');p.add_argument('--track-masks');p.add_argument('--track-weight',type=float,default=.01);p.add_argument('--appearance-rank',type=int)
     main(p.parse_args())

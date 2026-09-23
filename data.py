@@ -95,7 +95,7 @@ class N3DV:
         return self.cache[key]
 
     def camera(self, name, device):
-        return {k:v.to(device) if isinstance(v, torch.Tensor) else v for k,v in self.cameras[name].items()}
+        return {**{k:v.to(device) if isinstance(v, torch.Tensor) else v for k,v in self.cameras[name].items()}, 'renderer':self.cfg.get('renderer','reference')}
 
     def save_audit(self, path):
         Path(path).write_text(json.dumps({'inventory':self.inventory,'accesses':self.audit},indent=2))

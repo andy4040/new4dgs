@@ -68,11 +68,15 @@ def sqrt_spd(c):
 def gaussian_w2(x,a,y,b):
     """Squared W2, unequal set sizes. Eigh used only for detached FM endpoints."""
     ah=sqrt_spd(a)
-    cross=ah[:,None]@b[None]@ah[:,None]
-    trroot=torch.linalg.eigvalsh(cross).clamp_min(0).sqrt().sum(-1)
-    dist=torch.cdist(x,y).square()
     tr=lambda c:c.diagonal(dim1=-2,dim2=-1).sum(-1)
-    return (dist+tr(a)[:,None]+tr(b)[None]-2*trroot).clamp_min(0)
+    blocks=[]
+    for begin in range(0,len(x),128):
+        root=ah[begin:begin+128]
+        cross=root[:,None]@b[None]@root[:,None]
+        trroot=torch.linalg.eigvalsh(cross).clamp_min(0).sqrt().sum(-1)
+        dist=torch.cdist(x[begin:begin+128],y).square()
+        blocks.append((dist+tr(a[begin:begin+128])[:,None]+tr(b)[None]-2*trroot).clamp_min(0))
+    return torch.cat(blocks,0)
 
 
 def sinkhorn(cost, epsilon=0.05, iterations=500, tolerance=2e-3):

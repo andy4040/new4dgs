@@ -61,5 +61,6 @@
   "smoke_only": false,
   "gpu_hourly_usd": null,
   "triangulation_width": 1352,
-  "upstream_path": "../4DGaussians"
+  "upstream_path": "../4DGaussians",
+  "renderer": "cuda"
 }

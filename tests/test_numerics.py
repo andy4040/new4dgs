@@ -108,3 +108,16 @@ def test_split():
     cfg=json.loads((Path(__file__).parents[1]/'configs/smoke.json').read_text());validate_split(cfg)
     cfg['train_frames'][1]=12
     with pytest.raises(AssertionError):validate_split(cfg)
+
+
+def test_nonlinear_gaussian_approximation_is_not_exact():
+    class Nonlinear(nn.Module):
+        def forward(self,x,t):return torch.stack([.4*x[...,0].square(),x[...,1]*0,x[...,2]*0],-1)
+    torch.manual_seed(30)
+    x=torch.zeros(1,3);L=torch.eye(3)[None]*.4
+    z=torch.randn(2048,3)*.4;z=torch.cat([z,-z])
+    with torch.no_grad():
+        actual=advect_points(Nonlinear(),z,1,step=.1)
+        mean,cov=flow(Nonlinear(),x,L,1,step=.1)
+    assert (actual.mean(0)-mean[0]).norm()>.04
+    assert torch.linalg.eigvalsh(cov).min()>0

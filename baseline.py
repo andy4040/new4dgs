@@ -33,6 +33,7 @@ def initialize(reference,cfg,extent):
     xyz=reference.xyz.detach().cpu().numpy();rgb=reference.color().detach().cpu().numpy()
     model.create_from_pcd(BasicPointCloud(xyz,rgb,np.zeros_like(xyz)),extent,1.)
     model._deformation.deformation_net.set_aabb(xyz.max(0)+extent*.1,xyz.min(0)-extent*.1)
+    model._deformation.cuda()
     cov=reference.covariance().detach().cpu().numpy();vals,vecs=np.linalg.eigh(cov)
     vecs[:,:,0]*=np.linalg.det(vecs)[:,None]
     q=Rotation.from_matrix(vecs).as_quat()[:,[3,0,1,2]] # scipy xyzw -> upstream wxyz

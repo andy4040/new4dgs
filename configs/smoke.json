@@ -61,5 +61,6 @@
   "smoke_only": true,
   "gpu_hourly_usd": null,
   "triangulation_width": 640,
-  "upstream_path": "../4DGaussians"
+  "upstream_path": "../4DGaussians",
+  "renderer": "reference"
 }

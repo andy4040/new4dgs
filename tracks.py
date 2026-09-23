@@ -72,3 +72,14 @@ def track_loss(x,frame,observations,data):
         # Smooth L1 in image-width units; confidence weight retained.
         losses.append(torch.nn.functional.smooth_l1_loss(uv[0]/data.cfg['image_width'],target/data.cfg['image_width'])*o['confidence'])
     return torch.stack(losses).mean() if losses else x.sum()*0
+
+
+def training_track_metrics(positions,observations,data):
+    """Pixel residual against the same training LK supervision, NOT a test/3D error."""
+    errors=[];weights=[]
+    for o in observations:
+        x=torch.as_tensor(positions[o['frame']-10][o['id']:o['id']+1],dtype=torch.float32)
+        uv,_=project(x,data.camera(o['camera'],'cpu'))
+        errors.append(float((uv[0]-torch.tensor(o['uv'])).norm()));weights.append(o['confidence'])
+    return {'count':len(errors),'weighted_mean_pixel_error':float(np.average(errors,weights=weights)) if errors else None,
+            'scope':'training track consistency; not independent validation or 3D ground truth'}
