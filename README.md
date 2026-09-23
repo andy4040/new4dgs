@@ -131,3 +131,27 @@ scp -P 51913 root@218.150.198.117:/workspace/new4dgs-backup.tar.gz .
 ```
 
 묶음은 Git source archive, 전체 로컬 Git history bundle, 보존할 실행 결과/체크포인트/궤적을 포함합니다. 원본 데이터와 생성 fixture 영상은 포함하지 않습니다. 보존 목록: `docs/PRESERVE.md`. 원격 push 성공 여부와 별도 artifact 외부 보존 여부를 항상 따로 확인하세요.
+
+### Extended frame-10 reconstruction
+
+Run the isolated static keyframe experiment:
+
+```bash
+/venv/main/bin/python train_keyframe.py --config configs/coffee_keyframe.json --out runs/coffee_keyframe_10k
+```
+
+This uses up to 12,000 calibrated SIFT points (triangulation width 1280),
+384x288 RGB images, 10,000 Adam steps, and the original extent-scaled XYZ
+learning-rate endpoints with the exponential schedule compressed to 10,000 steps.
+Only frame 10 from the 17 training cameras is used. It does not train motion,
+densify, prune, or add time-dependent appearance. All other Gaussian learning
+rates remain at 0.005, and the objective remains L1. Every 1,000 steps it saves
+training metrics and paired target/render images; `latest.pt` contains model and
+optimizer state. cam00 is read only once training has finished, for evaluation.
+Multiple changes (point count, resolution, iterations, initialization resolution,
+and schedule) mean this is a combined improvement experiment, not an isolated
+causal ablation. A low RGB loss alone does not validate 3D geometry.
+
+Completed experiment: [extended keyframe report](reports/coffee_keyframe_10k.md).
+At equal 384x288 evaluation resolution, frame-10 cam00 PSNR improved from
+9.42 to 25.63 dB. This is static reconstruction, not an improved motion result.

@@ -1,0 +1,448 @@
+{
+  "result": {
+    "status": "completed",
+    "frame": 10,
+    "gaussians": 12000,
+    "steps": 10000,
+    "train": {
+      "step": 10000,
+      "seconds": 109.27211060700938,
+      "psnr": 25.548265232759363,
+      "l1": 0.029983986497801894,
+      "ssim_uniform7": 0.8267060868880328,
+      "coverage": 0.999984043485978
+    },
+    "heldout_view": {
+      "psnr": 25.631587982177734,
+      "ssim_uniform7": 0.8469310402870178,
+      "l1": 0.03305426985025406
+    },
+    "total_seconds": 110.02382892603055,
+    "peak_gpu_bytes": 87205376,
+    "geometry_verified": false,
+    "material_correspondence_proven": false,
+    "densification": false
+  },
+  "comparison": {
+    "image_width": 384,
+    "frame": 10,
+    "summary": {
+      "old": {
+        "train": {
+          "psnr": 8.931972952450023,
+          "l1": 0.2945789537009071,
+          "ssim_uniform7": 0.17878634175833533
+        },
+        "view": {
+          "psnr": 9.41806411743164,
+          "l1": 0.2788802981376648,
+          "ssim_uniform7": 0.18647818267345428
+        }
+      },
+      "new": {
+        "train": {
+          "psnr": 25.548265232759363,
+          "l1": 0.029983986497801894,
+          "ssim_uniform7": 0.8267060868880328
+        },
+        "view": {
+          "psnr": 25.631587982177734,
+          "l1": 0.03305426985025406,
+          "ssim_uniform7": 0.8469310402870178
+        }
+      }
+    },
+    "per_camera": [
+      {
+        "model": "old",
+        "camera": "cam00",
+        "split": "view",
+        "psnr": 9.41806411743164,
+        "ssim_uniform7": 0.18647818267345428,
+        "l1": 0.2788802981376648
+      },
+      {
+        "model": "new",
+        "camera": "cam00",
+        "split": "view",
+        "psnr": 25.631587982177734,
+        "ssim_uniform7": 0.8469310402870178,
+        "l1": 0.03305426985025406
+      },
+      {
+        "model": "old",
+        "camera": "cam01",
+        "split": "train",
+        "psnr": 8.460023880004883,
+        "ssim_uniform7": 0.12610170245170593,
+        "l1": 0.3205534815788269
+      },
+      {
+        "model": "new",
+        "camera": "cam01",
+        "split": "train",
+        "psnr": 23.273134231567383,
+        "ssim_uniform7": 0.8229473829269409,
+        "l1": 0.03703741729259491
+      },
+      {
+        "model": "old",
+        "camera": "cam02",
+        "split": "train",
+        "psnr": 8.591383934020996,
+        "ssim_uniform7": 0.13194617629051208,
+        "l1": 0.3156352937221527
+      },
+      {
+        "model": "new",
+        "camera": "cam02",
+        "split": "train",
+        "psnr": 26.603618621826172,
+        "ssim_uniform7": 0.8548243641853333,
+        "l1": 0.026503166183829308
+      },
+      {
+        "model": "old",
+        "camera": "cam04",
+        "split": "train",
+        "psnr": 8.905705451965332,
+        "ssim_uniform7": 0.17307743430137634,
+        "l1": 0.2996439039707184
+      },
+      {
+        "model": "new",
+        "camera": "cam04",
+        "split": "train",
+        "psnr": 28.465423583984375,
+        "ssim_uniform7": 0.8879313468933105,
+        "l1": 0.02197747863829136
+      },
+      {
+        "model": "old",
+        "camera": "cam05",
+        "split": "train",
+        "psnr": 9.227877616882324,
+        "ssim_uniform7": 0.1805775761604309,
+        "l1": 0.2868327498435974
+      },
+      {
+        "model": "new",
+        "camera": "cam05",
+        "split": "train",
+        "psnr": 28.689655303955078,
+        "ssim_uniform7": 0.885368824005127,
+        "l1": 0.021166278049349785
+      },
+      {
+        "model": "old",
+        "camera": "cam06",
+        "split": "train",
+        "psnr": 9.10148811340332,
+        "ssim_uniform7": 0.17506901919841766,
+        "l1": 0.29351887106895447
+      },
+      {
+        "model": "new",
+        "camera": "cam06",
+        "split": "train",
+        "psnr": 25.881961822509766,
+        "ssim_uniform7": 0.8354246020317078,
+        "l1": 0.026743076741695404
+      },
+      {
+        "model": "old",
+        "camera": "cam07",
+        "split": "train",
+        "psnr": 8.919647216796875,
+        "ssim_uniform7": 0.17282316088676453,
+        "l1": 0.3007960915565491
+      },
+      {
+        "model": "new",
+        "camera": "cam07",
+        "split": "train",
+        "psnr": 25.957008361816406,
+        "ssim_uniform7": 0.8321545720100403,
+        "l1": 0.026973428204655647
+      },
+      {
+        "model": "old",
+        "camera": "cam08",
+        "split": "train",
+        "psnr": 8.39388656616211,
+        "ssim_uniform7": 0.1666155606508255,
+        "l1": 0.31427082419395447
+      },
+      {
+        "model": "new",
+        "camera": "cam08",
+        "split": "train",
+        "psnr": 24.487472534179688,
+        "ssim_uniform7": 0.8122199773788452,
+        "l1": 0.030608780682086945
+      },
+      {
+        "model": "old",
+        "camera": "cam09",
+        "split": "train",
+        "psnr": 8.026934623718262,
+        "ssim_uniform7": 0.1635994017124176,
+        "l1": 0.3255768120288849
+      },
+      {
+        "model": "new",
+        "camera": "cam09",
+        "split": "train",
+        "psnr": 22.881563186645508,
+        "ssim_uniform7": 0.7481508255004883,
+        "l1": 0.0379631444811821
+      },
+      {
+        "model": "old",
+        "camera": "cam10",
+        "split": "train",
+        "psnr": 7.681600570678711,
+        "ssim_uniform7": 0.1600593477487564,
+        "l1": 0.3355754017829895
+      },
+      {
+        "model": "new",
+        "camera": "cam10",
+        "split": "train",
+        "psnr": 20.689353942871094,
+        "ssim_uniform7": 0.7047516107559204,
+        "l1": 0.04878949373960495
+      },
+      {
+        "model": "old",
+        "camera": "cam11",
+        "split": "train",
+        "psnr": 9.238205909729004,
+        "ssim_uniform7": 0.19720451533794403,
+        "l1": 0.28189095854759216
+      },
+      {
+        "model": "new",
+        "camera": "cam11",
+        "split": "train",
+        "psnr": 26.32263946533203,
+        "ssim_uniform7": 0.8402426242828369,
+        "l1": 0.027231445536017418
+      },
+      {
+        "model": "old",
+        "camera": "cam12",
+        "split": "train",
+        "psnr": 9.211949348449707,
+        "ssim_uniform7": 0.21060559153556824,
+        "l1": 0.2749624252319336
+      },
+      {
+        "model": "new",
+        "camera": "cam12",
+        "split": "train",
+        "psnr": 25.94907569885254,
+        "ssim_uniform7": 0.8325299024581909,
+        "l1": 0.03004968911409378
+      },
+      {
+        "model": "old",
+        "camera": "cam13",
+        "split": "train",
+        "psnr": 9.375349044799805,
+        "ssim_uniform7": 0.18401408195495605,
+        "l1": 0.2799278497695923
+      },
+      {
+        "model": "new",
+        "camera": "cam13",
+        "split": "train",
+        "psnr": 24.02953338623047,
+        "ssim_uniform7": 0.8123992681503296,
+        "l1": 0.03488229587674141
+      },
+      {
+        "model": "old",
+        "camera": "cam14",
+        "split": "train",
+        "psnr": 9.46766471862793,
+        "ssim_uniform7": 0.2007843554019928,
+        "l1": 0.2759113907814026
+      },
+      {
+        "model": "new",
+        "camera": "cam14",
+        "split": "train",
+        "psnr": 28.258638381958008,
+        "ssim_uniform7": 0.8711916208267212,
+        "l1": 0.02393411658704281
+      },
+      {
+        "model": "old",
+        "camera": "cam16",
+        "split": "train",
+        "psnr": 9.727225303649902,
+        "ssim_uniform7": 0.22533859312534332,
+        "l1": 0.2557884454727173
+      },
+      {
+        "model": "new",
+        "camera": "cam16",
+        "split": "train",
+        "psnr": 26.525787353515625,
+        "ssim_uniform7": 0.8523879647254944,
+        "l1": 0.026269298046827316
+      },
+      {
+        "model": "old",
+        "camera": "cam18",
+        "split": "train",
+        "psnr": 9.361932754516602,
+        "ssim_uniform7": 0.20251432061195374,
+        "l1": 0.26867958903312683
+      },
+      {
+        "model": "new",
+        "camera": "cam18",
+        "split": "train",
+        "psnr": 25.30615997314453,
+        "ssim_uniform7": 0.830192506313324,
+        "l1": 0.02994336001574993
+      },
+      {
+        "model": "old",
+        "camera": "cam19",
+        "split": "train",
+        "psnr": 9.201603889465332,
+        "ssim_uniform7": 0.1813981533050537,
+        "l1": 0.2874086797237396
+      },
+      {
+        "model": "new",
+        "camera": "cam19",
+        "split": "train",
+        "psnr": 26.08019256591797,
+        "ssim_uniform7": 0.8273899555206299,
+        "l1": 0.027717910706996918
+      },
+      {
+        "model": "old",
+        "camera": "cam20",
+        "split": "train",
+        "psnr": 8.951061248779297,
+        "ssim_uniform7": 0.18763881921768188,
+        "l1": 0.29086944460868835
+      },
+      {
+        "model": "new",
+        "camera": "cam20",
+        "split": "train",
+        "psnr": 24.91929054260254,
+        "ssim_uniform7": 0.8038961291313171,
+        "l1": 0.03193739056587219
+      }
+    ],
+    "note": "Target / old 512-point 68-step endpoint / new 12000-point 10000-step endpoint. Static keyframe only; no trajectory evaluation."
+  },
+  "progress": [
+    {
+      "step": 0,
+      "seconds": 43.58278816600796,
+      "psnr": 8.722246618831859,
+      "l1": 0.30248748554902916,
+      "ssim_uniform7": 0.170710711794741,
+      "coverage": 0.7071259337313035
+    },
+    {
+      "step": 1000,
+      "seconds": 50.226579310023226,
+      "psnr": 21.771957958445828,
+      "l1": 0.05199248212225297,
+      "ssim_uniform7": 0.7022070604212144,
+      "coverage": 0.9994462973931256
+    },
+    {
+      "step": 2000,
+      "seconds": 56.67225633596536,
+      "psnr": 23.24965129179113,
+      "l1": 0.04133816052447347,
+      "ssim_uniform7": 0.7609524306129006,
+      "coverage": 0.9999712775735294
+    },
+    {
+      "step": 3000,
+      "seconds": 63.20008981297724,
+      "psnr": 23.994640686932733,
+      "l1": 0.037068308714558094,
+      "ssim_uniform7": 0.7859254304100486,
+      "coverage": 1.0
+    },
+    {
+      "step": 4000,
+      "seconds": 69.88150736701209,
+      "psnr": 24.575357549330768,
+      "l1": 0.03450190955225159,
+      "ssim_uniform7": 0.8019352976013633,
+      "coverage": 1.0
+    },
+    {
+      "step": 5000,
+      "seconds": 76.28035761299543,
+      "psnr": 24.88462964226218,
+      "l1": 0.03293073725174455,
+      "ssim_uniform7": 0.8111118639216703,
+      "coverage": 1.0
+    },
+    {
+      "step": 6000,
+      "seconds": 82.88521999504883,
+      "psnr": 25.130375693826114,
+      "l1": 0.031786523978499806,
+      "ssim_uniform7": 0.8174924534909865,
+      "coverage": 0.9999984046992134
+    },
+    {
+      "step": 7000,
+      "seconds": 89.52603258797899,
+      "psnr": 25.275772543514478,
+      "l1": 0.031122031347716555,
+      "ssim_uniform7": 0.8212181610219619,
+      "coverage": 0.9999856387867647
+    },
+    {
+      "step": 8000,
+      "seconds": 96.07063479605131,
+      "psnr": 25.38379747727338,
+      "l1": 0.03060280148159055,
+      "ssim_uniform7": 0.8239065303521997,
+      "coverage": 0.99997978701311
+    },
+    {
+      "step": 9000,
+      "seconds": 102.59020819398575,
+      "psnr": 25.51618486292222,
+      "l1": 0.030075726482798073,
+      "ssim_uniform7": 0.8264366072766921,
+      "coverage": 0.9999744716812583
+    },
+    {
+      "step": 10000,
+      "seconds": 109.27211060700938,
+      "psnr": 25.548265232759363,
+      "l1": 0.029983986497801894,
+      "ssim_uniform7": 0.8267060868880328,
+      "coverage": 0.999984043485978
+    }
+  ],
+  "initialization": {
+    "frame": 10,
+    "raw_points": 16736,
+    "selected": 12000,
+    "source": "SIFT mutual ratio / calibrated reprojection / positive depth / parallax"
+  },
+  "heldout_training_leakage": false,
+  "tests": "16 passed",
+  "gpu": "RTX 3090",
+  "peak_gpu_note": "PyTorch allocated memory only; excludes native CUDA rasterizer allocations/context",
+  "gpu_hourly_usd": null
+}
