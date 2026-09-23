@@ -29,9 +29,10 @@ class N3DV:
         names = {p.stem for p in self.root.glob('cam*.mp4')}
         names |= {p.name for p in self.root.glob('cam*') if p.is_dir()}
         self.names = sorted(n for n in names if re.fullmatch(r'cam\d+', n))
-        if len(self.names) != len(poses) or self.names != [f'cam{i:02d}' for i in range(len(poses))]:
+        # Official N3DV: calibration rows follow sorted existing streams; gaps are valid.
+        if len(self.names) != len(poses) or len({int(n[3:]) for n in self.names}) != len(self.names):
             raise ValueError('Camera names must map unambiguously to calibration rows: ' + str(self.names))
-        if len(self.names) < 3:
+        if len(self.names) < 3 or cfg['test_camera'] not in self.names:
             raise ValueError('Need cam00 and at least two training cameras')
         self.train_cameras = [n for n in self.names if n != cfg['test_camera']]
         # Exact upstream conversion: [col1,-col0,col2,translation], then flip y/z.
@@ -56,7 +57,7 @@ class N3DV:
             fps = cap.get(cv2.CAP_PROP_FPS) if cap is not None else None
             count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if cap is not None else len(files)
             if cap is not None: cap.release()
-            self.inventory[name] = {'images': len(files), 'video_frames': count, 'fps': fps}
+            self.inventory[name] = {'images': len(files), 'video_frames': count, 'fps': fps, 'calibration_row': i, 'calibration_height':float(h), 'calibration_width':float(w), 'calibration_focal':float(f)}
             if not files and count < 31: raise ValueError(f'{name}: fewer than 31 frames')
         centers = np.array([self.cameras[n]['center'] for n in self.train_cameras])
         self.extent = float(np.linalg.norm(centers-centers.mean(0), axis=1).max()*1.1)

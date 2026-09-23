@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from torch import nn
 from data import N3DV,normalized_time
-from geometry import Gaussians,triangulate,optimize_endpoint
+from geometry import Gaussians,triangulate,optimize_endpoint,initial_scales
 from transport import Velocity,FlowMatching,flow,jacobian
 from covariance_renderer import render
 from evaluation import image_metrics,save_image,visualize,approximation_error
@@ -63,7 +63,7 @@ def execute(args,cfg,out,start):
     for frame,key in [(10,'gaussians_start'),(30,'gaussians_end')]:
         tick=time.perf_counter();xyz,rgb,report=triangulate(geo,frame,cfg[key]);sync()
         timings[f'triangulate_{frame}']=time.perf_counter()-tick
-        g=Gaussians(xyz.to(device),rgb.to(device),data.extent*.005).to(device)
+        g=Gaussians(xyz.to(device),rgb.to(device),initial_scales(xyz,data.extent,cfg)).to(device)
         tick=time.perf_counter();report.update(optimize_endpoint(data,frame,g,cfg));sync()
         timings[f'endpoint_{frame}']=time.perf_counter()-tick
         endpoints.append(g);reports.append(report)

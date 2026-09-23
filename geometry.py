@@ -12,7 +12,9 @@ class Gaussians(nn.Module):
     def __init__(self, xyz, rgb, scale):
         super().__init__()
         self.xyz=nn.Parameter(xyz.clone())
-        self.log_scale=nn.Parameter(torch.full_like(xyz, math.log(scale)))
+        initial_scale=torch.as_tensor(scale,device=xyz.device,dtype=xyz.dtype)
+        if initial_scale.ndim==1:initial_scale=initial_scale[:,None]
+        self.log_scale=nn.Parameter(initial_scale.expand_as(xyz).clamp_min(1e-8).log().clone())
         self.lower=nn.Parameter(torch.zeros_like(xyz))
         self.color_logits=nn.Parameter(torch.logit(rgb.clamp(.01,.99)))
         self.opacity_logits=nn.Parameter(torch.full((len(xyz),),-1.,device=xyz.device))
@@ -102,3 +104,18 @@ def optimize_endpoint(data,frame,model,cfg):
             'loss_history':history,'geometry_verified':False,
             'passes_rgb_gate':float(np.mean(errors))<=cfg['endpoint_max_l1'],
             'note':'RGB gate is necessary, not proof of accurate depth or material identity.'}
+
+
+def initial_scales(xyz,extent,cfg):
+    """Original 3DGS RMS distance to nearest three neighbors, optional scene cap.
+    Initialization only; no gradients through this point-cloud statistic.
+    """
+    if cfg.get('initial_scale_method','extent')=='extent':return extent*.005
+    if cfg['initial_scale_method']!='knn3':raise ValueError('Unknown scale initialization')
+    from scipy.spatial import cKDTree
+    if len(xyz)<4:raise ValueError('Need four points for 3-neighbor initialization')
+    distances,_=cKDTree(xyz.detach().cpu().numpy()).query(xyz.detach().cpu().numpy(),k=4)
+    scales=np.sqrt(np.mean(distances[:,1:]**2,axis=1))
+    if cfg.get('initial_scale_max_extent_ratio') is not None:
+        scales=np.minimum(scales,extent*cfg['initial_scale_max_extent_ratio'])
+    return torch.tensor(scales,dtype=xyz.dtype,device=xyz.device)

@@ -121,3 +121,13 @@ def test_nonlinear_gaussian_approximation_is_not_exact():
         mean,cov=flow(Nonlinear(),x,L,1,step=.1)
     assert (actual.mean(0)-mean[0]).norm()>.04
     assert torch.linalg.eigvalsh(cov).min()>0
+
+
+def test_neighbor_scale_and_vector_gaussian_initialization():
+    from geometry import initial_scales,Gaussians
+    x=torch.tensor([[0.,0.,0.],[1.,0.,0.],[0.,1.,0.],[0.,0.,1.]])
+    scales=initial_scales(x,10.,{'initial_scale_method':'knn3','initial_scale_max_extent_ratio':None})
+    assert scales[0].item()==pytest.approx(1.)
+    assert scales[1].item()==pytest.approx((5/3)**.5)
+    model=Gaussians(x,torch.ones_like(x)*.5,scales)
+    torch.testing.assert_close(model.factor().diagonal(dim1=-2,dim2=-1),scales[:,None].expand_as(x))

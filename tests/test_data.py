@@ -24,3 +24,15 @@ def test_strict_access_and_camera_count(tmp_path):
         with pytest.raises(PermissionError):d.image(c,f,'train')
     assert len(d.audit)==0
     assert d.image('cam01',10).shape==(24,32,3)
+
+
+def test_missing_camera_id_uses_sorted_calibration_rows(tmp_path):
+    fixture_dataset(tmp_path)
+    (tmp_path/'cam02').rename(tmp_path/'cam05')
+    cfg=json.loads((Path(__file__).parents[1]/'configs/smoke.json').read_text())
+    cfg.update(data_root=str(tmp_path),image_width=32)
+    d=N3DV(cfg)
+    assert d.names==['cam00','cam01','cam05']
+    assert d.inventory['cam05']['calibration_row']==2
+    assert d.cameras['cam05']['center']==[1.,0.,0.]
+    with pytest.raises(PermissionError):d.image('cam05',12,'train')
