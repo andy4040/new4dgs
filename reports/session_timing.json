@@ -1,8 +1,8 @@
 {
   "observed_start_utc": "2026-09-23T06:14:14+00:00",
-  "report_time_utc": "2026-09-23T06:32:57.806149+00:00",
-  "observed_session_wall_seconds": 1123.806149,
-  "observed_allocated_gpu_hours": 0.3121683747222222,
+  "report_time_utc": "2026-09-23T06:49:52.813217+00:00",
+  "observed_session_wall_seconds": 2138.813217,
+  "observed_allocated_gpu_hours": 0.5941147824999999,
   "cost_usd": null,
-  "note": "Includes dependency setup, implementation and smoke verification while instance allocated; rate unknown. Actual Vast billing starts outside this measured window."
+  "note": "Observed instance allocation through implementation and follow-up data acquisition/experiments, including inter-turn interval. Not a speed benchmark. Rate unknown; actual Vast billing may extend beyond this window."
 }

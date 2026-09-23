@@ -12,7 +12,7 @@ root=Path(__file__).resolve().parents[1];dest=Path(a.out).resolve();dest.parent.
 status=subprocess.check_output(['git','-C',str(root),'status','--porcelain'],text=True)
 if status.strip():raise SystemExit('Commit all source/report changes before exporting; refusing stale source archive.')
 commit=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()
-selected=['synthetic','fixture_fm_rgb_v2','fixture_cuda','fixture_baseline','fixture_reloaded','fixture_tracks','fixture_appearance','n3dv_attempt']
+selected=['synthetic','fixture_fm_rgb_v2','fixture_cuda','fixture_baseline','fixture_reloaded','fixture_tracks','fixture_appearance','n3dv_attempt','coffee_inventory','coffee_fm_rgb','coffee_fm_rgb_v2','coffee_rgb','coffee_fm_persistent','coffee_canonical_4dgs']
 manifest={'commit':commit,'remote_push_succeeded':False,'external_artifact_backup_succeeded':False,
           'note':'Download or copy off this nonpersistent Vast instance before deletion. No raw data included.','files':[]}
 with tempfile.TemporaryDirectory(prefix='new4dgs_export_') as tmp:

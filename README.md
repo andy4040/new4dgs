@@ -2,18 +2,31 @@
 
 coffee_martini의 Gaussian 중심을 `dμ/dt=vθ(μ,t)`로 이동시키는 연구용 구현입니다. **이전 코드를 복구한 것이 아니라 새로 구현했습니다.** 기존 파일/공개 Git 백업 검색에서 해당 프로젝트를 찾지 못했습니다. 출처·기준 commit·라이선스는 [docs/PROVENANCE.md](docs/PROVENANCE.md)에 기록했습니다.
 
-**현재 실제 coffee_martini 데이터는 이 Vast에 없습니다.** 사용자의 PC 바탕화면은 이 서버에서 접근할 수 없습니다. 실제 N3DV의 카메라 수, 기하 품질, 영상 성능, 물질 대응은 아직 확인하지 않았습니다. 아래 실행 결과는 합성 수치 검증 및 직접 생성한 보정 카메라 fixture 결과입니다.
+**2026-09-23 업데이트: 공식 coffee_martini 배포본을 직접 다운로드했습니다.** 외부 경로는 `/workspace/datasets/coffee_martini`이며, 18개 카메라(학습 17개), 각 300프레임, 2704×2028, 30fps를 실제 파일에서 확인했습니다. [다운로드 출처·무결성·분할](docs/DATASET.md). 아래 합성 검증 결과와 실제 N3DV 결과는 구분합니다. 물질 대응은 입증하지 않았습니다.
 
 ## 현재 확인된 결과와 상태
 
 - RTX 3090 24GB, host driver 570.172.08, CUDA 12.8, Python 3.12.14, Torch 2.7.1+cu128. 처음에는 Torch가 없어서 설치했습니다. 드라이버는 수정하지 않았습니다.
-- 핵심 수치/누출 차단 **14개 테스트 통과**. 평행이동, 회전, 곡선 운동을 CPU/CUDA에서 검사했습니다. Euler 수렴, RK4, Gaussian OT, 불균일 개수의 Sinkhorn, RGB→Jacobian 역전파의 유한차분 검사도 포함합니다.
+- 핵심 수치/누출 차단 **16개 테스트 통과**. 평행이동, 회전, 곡선 운동을 CPU/CUDA에서 검사했습니다. Euler 수렴, RK4, Gaussian OT, 불균일 개수의 Sinkhorn, RGB→Jacobian 역전파의 유한차분 검사도 포함합니다.
 - CUDA rasterizer scale/rotation 입력과 full covariance 입력의 최대 이미지 차이 **1.043e-7**. CUDA RGB→ODE 속도장 gradient norm **10.9368**. `reports/cuda_validation.json`.
 - 원본 canonical HexPlane 모델의 gradient/optimizer 검사 통과. 합성 fixture에서 baseline 전체 학습/평가 실행 완료.
 - 직접 생성한 3개 카메라 fixture로 삼각측량, 서로 다른 endpoint 개수(128/160), RGB 최적화, FM, ODE RGB, 분리 평가, 저장/재로드 및 궤적 시각화 완료. 훈련/삼각측량 접근 감사에서 cam00·보류 프레임 누출 **0건**. 저장 checkpoint 재평가의 이미지 지표가 원 실행과 정확히 일치했습니다.
 - 실제 CUDA backend를 사용하는 fixture 학습, 신뢰 영역 마스크를 사용하는 LK track 버전, 제한된 시간 외관 변화 버전도 실행했습니다. 실제 N3DV에서의 검증은 아닙니다.
 - fixture endpoint L1은 약 **0.4315 / 0.4216**으로 기준 0.08을 통과하지 못했습니다. smoke 설정이므로 계속 실행했으며 모든 관련 결과는 **부정확한 endpoint 기반 기능 검사**입니다. 장기 연구 성능으로 해석하지 마세요.
-- 실제 N3DV 실행은 `FileNotFoundError: Set --data ...`로 실패했습니다. `reports/n3dv_failure.json`에 기록했습니다. 실제 N3DV의 필수 네 가지 비교, 추적/외관 ablation 및 장기 학습은 미실행입니다.
+- 최초 실제 N3DV 시도는 데이터가 없어 실패했고 기록을 유지합니다(`reports/n3dv_failure.json`). 이후 공식 데이터를 다운로드했습니다. 첫 실제 데이터 실행에서는 Sinkhorn 500회가 주변분포 오차 0.03125로 실패하여 5,000회 설정으로 수정했습니다. 실제 추적/외관 ablation 및 장기 학습은 아직 실행하지 않았습니다.
+
+실제 coffee_martini에서도 필수 네 설정의 smoke 학습·평가를 완료했습니다. 96×72, endpoint 512/640개, endpoint당 68 step, 구간 RGB 16 step입니다. [전체 비교와 제한](reports/coffee_comparison.md).
+
+| 실제 N3DV 설정 | 공간 시점 PSNR | 시간 보간 PSNR |
+|---|---:|---:|
+| RGB only | 9.7107 | 9.2254 |
+| FM 초기화 후 RGB | 9.6941 | 9.1936 |
+| FM 계속 유지 | 9.6332 | 9.1321 |
+| canonical 4DGS architecture baseline | 14.0719 | 13.3014 |
+
+**모든 설정의 초기 endpoint가 품질 기준을 통과하지 못했습니다**(L1 약 0.2860/0.2840, 기준 0.08). 이 값은 동작 검증 결과이며 수렴한 연구 성능·물질 대응·공정한 최종 순위가 아닙니다. N3DV 정답 3D 오차는 null이며 모든 실행에서 학습/삼각측량 보류 영상 누출은 0건입니다. 초기 크기를 이웃 점 간격으로 설정하고, 공분산 크기 상한을 camera extent의 0.1배로 명시했습니다. 5,000회 Sinkhorn의 실제 FM 초기화 주변분포 L1은 약 1.35e-6입니다. 나머지 세 smoke 작업은 한 GPU에서 동시에 실행했으므로 개별 wall time을 속도 비교에 사용하거나 GPU 시간을 합산하면 안 됩니다. 그룹 wall time과 다운로드/추출 시간은 별도로 기록했습니다.
+
+실제 결과: `runs/coffee_fm_rgb_v2/`, `runs/coffee_rgb/`, `runs/coffee_fm_persistent/`, `runs/coffee_canonical_4dgs/`. FM 결과에는 평가 RGB 위 고정 ID 투영 경로(`projection_overlay_cam00.png`)와 기준점 대비 변위 그림(`displacements_3d.png`)도 있습니다.
 
 알려진 초기 기하를 사용한 별도의 작은 합성 곡선 영상 실험(각 80 RGB step, Gaussian 6개)의 보류 시간 결과:
 
@@ -38,16 +51,16 @@ python synthetic.py --steps 80 --out runs/synthetic_new
 
 새 인스턴스에서는 `bash scripts/setup.sh`로 pinned upstream과 환경을 설치합니다. 기본 GPU arch는 이 RTX 3090의 8.6입니다. 다른 GPU에서는 해당 arch를 설정하고 CUDA wheel 호환성을 먼저 확인하세요. `requirements-core-lock.txt`는 핵심 직접 의존성 버전, `reports/environment-lock.txt`는 이 인스턴스의 전체 설치 스냅샷입니다. 후자의 확장 패키지 로컬 경로는 setup.sh로 재구축합니다. 기존 형제 4DGaussians가 다른 commit이면 setup은 수정하지 않고 중단합니다. `upstream_path`로 별도의 pinned checkout을 지정할 수 있습니다.
 
-데이터를 서버의 외부 폴더로 업로드한 뒤 아래를 실행합니다. **프로젝트 내부에 데이터를 복사하지 않습니다.**
+현재 데이터는 이미 `/workspace/datasets/coffee_martini`에 있습니다. 새 인스턴스에서는 `python scripts/download_n3dv.py --root /workspace/datasets`로 공식 배포본을 받을 수 있습니다. **프로젝트 내부에 데이터를 복사하지 않습니다.**
 
 ```bash
-python run.py --data /external/path/coffee_martini --inspect --out runs/inventory
-python run.py --data /external/path/coffee_martini --config configs/smoke.json \
+python run.py --data /workspace/datasets/coffee_martini --inspect --out runs/inventory
+python run.py --data /workspace/datasets/coffee_martini --config configs/coffee_smoke.json \
   --variant fm_rgb --renderer cuda --out runs/coffee_smoke
 python evaluate.py --checkpoint runs/coffee_smoke/checkpoint.pt \
-  --data /external/path/coffee_martini --out runs/coffee_reloaded
-python scripts/run_matrix.py --data /external/path/coffee_martini \
-  --config configs/smoke.json --out runs/coffee_matrix
+  --data /workspace/datasets/coffee_martini --out runs/coffee_reloaded
+python scripts/run_matrix.py --data /workspace/datasets/coffee_martini \
+  --config configs/coffee_smoke.json --out runs/coffee_matrix
 ```
 
 `run_matrix.py`는 `rgb`, `fm_rgb`, `fm_persistent`, `canonical_4dgs`를 같은 설정/분할/해상도로 순차 실행하고 비교 CSV를 생성합니다. `--out` 기존 결과 덮어쓰기를 막습니다. 각 실행은 seed를 재설정하고 endpoint부터 다시 실행하여 전처리와 endpoint/FM 시간을 총시간에 포함합니다. `metrics.json`의 `allocated_gpu_hours`는 전체 실행 wall time 기준이며 순수 kernel 시간은 아닙니다. 실제 시간당 요금을 `gpu_hourly_usd`에 넣으면 추정 비용을 계산합니다. 요금이 없으면 비용은 null입니다. 환경 설치 비용은 별도 환경 준비 시간이며 per-run 총시간에 포함되지 않습니다.
@@ -56,7 +69,7 @@ GPU 연구 설정 초안은 `configs/research_unvalidated.json`입니다. **10k/
 
 ## 데이터와 좌표
 
-외부 폴더는 `poses_bounds.npy`와 `camNN.mp4` 또는 `camNN/images/0000.png` 구조를 지원합니다. 카메라명과 calibration row의 매핑이 연속적이지 않거나 중복되면 추정하지 않고 오류를 냅니다. 실제 카메라 수를 확인하며 **17개를 하드코딩하지 않습니다**. 이미지 폴더는 0번 프레임 존재를 확인하며, 영상은 필요한 frame만 읽습니다. 이미지가 이미 downsample된 경우에도 intrinsics는 calibration의 원래 H/W로부터 목표 해상도로 조정합니다.
+외부 폴더는 `poses_bounds.npy`와 `camNN.mp4` 또는 `camNN/images/0000.png` 구조를 지원합니다. 공식 규칙대로 calibration row를 존재하는 camNN 파일의 정렬 순서에 연결합니다. 빠진 카메라 번호는 허용하며, 카메라 수와 calibration row 수가 다르거나 중복 이름이 있으면 오류를 냅니다. 실제 카메라 수를 확인하며 **17개를 하드코딩하지 않습니다**. 이미지 폴더는 0번 프레임 존재를 확인하며, 영상은 필요한 frame만 읽습니다. 이미지가 이미 downsample된 경우에도 intrinsics는 calibration의 원래 H/W로부터 목표 해상도로 조정합니다.
 
 - frame index는 0 기반.
 - 학습: **10,11,13,14,15,17,18,19,21,22,23,25,26,27,29,30**.
@@ -89,9 +102,9 @@ RGB 학습에서는 고정된 endpoint 기준 기하와 속도장을 사용합�
 OpenCV LK를 사용하므로 별도의 pretrained 가중치를 가정하지 않습니다. 실제 액체/반사 영역은 자동으로 신뢰 판정하지 않습니다. 사용자가 제공한 **신뢰 영역만 흰색인 camNN.png 마스크**가 있어야 tracking을 켤 수 있습니다.
 
 ```bash
-python run.py --data /external/path/coffee_martini --variant rgb \
+python run.py --data /workspace/datasets/coffee_martini --variant rgb \
   --track-masks /external/reliable_masks --track-weight 0.01 --out runs/coffee_tracks
-python run.py --data /external/path/coffee_martini --variant fm_rgb \
+python run.py --data /workspace/datasets/coffee_martini --variant fm_rgb \
   --appearance-rank 1 --out runs/coffee_time_appearance
 ```
 
@@ -103,7 +116,7 @@ frame 10 feature를 3px 이내의 Gaussian 투영과 연결하고 렌더 깊이�
 
 각 실행 폴더: 설정/카메라 inventory, endpoint RGB/target/alpha/depth, endpoint 품질 JSON, persistent ID checkpoint, Sinkhorn 진단, 학습 loss, 분리된 이미지/분포 지표, sample transport 오차, 접근 감사, 3D 궤적 PNG와 카메라 투영 PNG, ID/색/좌표 NPZ. 모든 궤적 그림은 ID별 색이 고정됩니다. baseline 궤적은 canonical deformation 출력이며 ODE라고 부르지 않습니다.
 
-다음 단계는 실제 데이터 업로드 후 inventory 및 calibration 확인 → endpoint RGB/깊이 검토 → 짧은 네 방법 비교 → 적분 step 수렴/geometry 수 증가 → 신뢰 마스크가 있을 때 tracking 비교 → 제한된 외관 ablation입니다. 이 구현의 수치 동작을 확인한 것과 실제 물질 궤적 복원을 입증한 것은 별개입니다. 실제 N3DV 정답 3D 궤적은 없고 추적 없는 RGB만으로 물질 대응을 단정할 수 없습니다.
+다음 단계는 실제 데이터의 endpoint RGB/깊이 검토 → 짧은 네 방법 비교 → 적분 step 수렴/geometry 수 증가 → 신뢰 마스크가 있을 때 tracking 비교 → 제한된 외관 ablation입니다. 이 구현의 수치 동작을 확인한 것과 실제 물질 궤적 복원을 입증한 것은 별개입니다. 실제 N3DV 정답 3D 궤적은 없고 추적 없는 RGB만으로 물질 대응을 단정할 수 없습니다.
 
 ## 백업
 

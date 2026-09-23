@@ -1,0 +1,13 @@
+{
+  "started_utc": "2026-09-23T06:44:19.100089+00:00",
+  "variants": [
+    "rgb",
+    "fm_persistent",
+    "canonical_4dgs"
+  ],
+  "execution": "three independent smoke jobs concurrently on one GPU; per-run timings include contention, not speed benchmarks",
+  "finished_utc": "2026-09-23T06:48:40.602847+00:00",
+  "wall_seconds": 261.502758,
+  "allocated_gpu_hours": 0.072639655,
+  "estimated_usd": null
+}

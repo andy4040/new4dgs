@@ -2,31 +2,37 @@
   "completed": [
     "independent implementation, not restoration",
     "strict N3DV format loader (fixture verified)",
-    "14 numerical and data access tests",
+    "16 numerical and data access tests",
     "CUDA covariance convention and RGB gradient validation",
     "three synthetic RGB trajectory variants",
     "calibrated synthetic fixture endpoint/FM/ODE/evaluation/visualization",
     "canonical upstream architecture fixture baseline",
     "checkpoint reload equality",
     "synthetic masked LK supervision and restricted appearance ablation",
-    "local staged git commits"
+    "local staged git commits",
+    "official coffee_martini download, ZIP CRC and local SHA256",
+    "actual calibration inventory: 18 cameras, 17 train, 300 frames, 30 FPS",
+    "actual N3DV four-way smoke comparison and fixed-ID visualizations",
+    "zero forbidden training/triangulation accesses in all four actual runs"
   ],
   "failed_or_blocked": [
-    "actual N3DV attempt: external coffee_martini directory absent",
-    "remote git backup: repository URL/access not supplied",
-    "off-instance artifact backup: persistent destination not supplied"
+    "remote git backup: repository URL/access not supplied; account URL is insufficient",
+    "off-instance artifact backup: persistent destination not supplied",
+    "all actual endpoint RGB quality gates failed; results explicitly labeled inaccurate-endpoint smoke"
   ],
   "fixed_failures": [
     "CUDA headers FLT_MAX/uintptr_t via compiler forced includes",
     "upstream AABB CPU/CUDA placement in adapter",
-    "synthetic fixture remap dtype"
+    "synthetic fixture remap dtype",
+    "missing N3DV data resolved by official download",
+    "official missing camera IDs handled by sorted stream-to-calibration mapping",
+    "initial 500-iteration actual Sinkhorn marginal failure resolved with 5000 iterations at unchanged tolerance"
   ],
   "not_executed": [
-    "actual camera count and coffee_martini calibration inspection",
-    "actual N3DV four-way comparison",
+    "converged actual N3DV training",
     "N3DV material correspondence validation",
     "long research configuration",
-    "actual N3DV masked tracking and appearance experiments"
+    "actual N3DV masked tracking and temporal appearance experiments"
   ],
   "remote_push_succeeded": false,
   "material_correspondence_proven": false

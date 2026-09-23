@@ -43,6 +43,8 @@
   ],
   "relevant_public_backup_found": false,
   "private_backups_checked": false,
-  "actual_n3dv_data_found": false,
-  "remote_push_succeeded": false
+  "remote_push_succeeded": false,
+  "actual_n3dv_data_found_at_initial_inspection": false,
+  "actual_n3dv_data_present_now": true,
+  "actual_n3dv_data_root": "/workspace/datasets/coffee_martini"
 }

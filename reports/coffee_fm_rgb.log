@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/new4dgs/run.py", line 169, in <module>
+    main(p.parse_args())
+  File "/workspace/new4dgs/run.py", line 46, in main
+    try: execute(args,cfg,out,start)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/new4dgs/run.py", line 92, in execute
+    fm=FlowMatching(x0,g.covariance(),e.xyz,e.covariance(),cfg)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/new4dgs/transport.py", line 106, in __init__
+    self.p,self.diagnostics=sinkhorn(self.cost,cfg['sinkhorn_epsilon'],cfg['sinkhorn_iterations'],cfg['sinkhorn_tolerance'])
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/new4dgs/transport.py", line 93, in sinkhorn
+    if err>tolerance: raise RuntimeError(f'Sinkhorn marginal L1 {err:.4g} > {tolerance}')
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Sinkhorn marginal L1 0.03125 > 0.002

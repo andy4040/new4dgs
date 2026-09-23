@@ -1,0 +1,341 @@
+{
+  "dataset": "official coffee_martini",
+  "config": "configs/coffee_smoke.json",
+  "scope": "functional smoke; inaccurate endpoints; no material-correspondence claim",
+  "results": [
+    {
+      "variant": "rgb",
+      "run": "runs/coffee_rgb",
+      "image": {
+        "view": {
+          "psnr": 9.710660219192505,
+          "ssim_uniform7": 0.12558883987367153,
+          "l1": 0.26687469705939293
+        },
+        "time": {
+          "psnr": 9.225377419415642,
+          "ssim_uniform7": 0.1260650816209176,
+          "l1": 0.2825352354961283
+        },
+        "joint": {
+          "psnr": 9.71370792388916,
+          "ssim_uniform7": 0.12559125572443008,
+          "l1": 0.26678969860076907
+        }
+      },
+      "distribution": {
+        "endpoint_symmetric_chamfer_squared": 7.798748970031738,
+        "note": "Distribution geometry only; not material correspondence."
+      },
+      "trajectory_3d_error": null,
+      "material_correspondence_proven": false,
+      "endpoint_l1": [
+        0.28600848685292635,
+        0.2839694312390159
+      ],
+      "endpoint_rgb_gate_failed": true,
+      "endpoint_counts": [
+        512,
+        640
+      ],
+      "training_access_leaks": 0,
+      "observed_training_frames": [
+        10,
+        11,
+        13,
+        14,
+        15,
+        17,
+        18,
+        19,
+        21,
+        22,
+        23,
+        25,
+        26,
+        27,
+        29,
+        30
+      ],
+      "total_seconds_including_preprocessing": 257.3087046829751,
+      "stage_seconds": {
+        "triangulate_10": 23.96831615990959,
+        "endpoint_10": 18.183500648010522,
+        "triangulate_30": 32.22672762803268,
+        "endpoint_30": 22.911125677987002,
+        "coupling_and_fm": 4.108995199203491e-05,
+        "tracking": 0.00022742198780179024,
+        "interval_training": 32.32285145903006,
+        "evaluation_and_visualization": 123.44046033802442
+      },
+      "peak_torch_allocated_gpu_bytes": 56528896,
+      "gaussian_approximation": {
+        "samples_per_gaussian": 1024,
+        "gaussians": 8,
+        "mean_error": 0.03173859789967537,
+        "relative_covariance_frobenius": 0.06219512224197388,
+        "note": "Monte Carlo discrepancy includes sampling noise; not 3D trajectory ground truth."
+      },
+      "sinkhorn": null
+    },
+    {
+      "variant": "fm_rgb",
+      "run": "runs/coffee_fm_rgb_v2",
+      "image": {
+        "view": {
+          "psnr": 9.694093406200409,
+          "ssim_uniform7": 0.12249653181061149,
+          "l1": 0.2674404326826334
+        },
+        "time": {
+          "psnr": 9.193553010155172,
+          "ssim_uniform7": 0.12463489043362,
+          "l1": 0.28367914960664864
+        },
+        "joint": {
+          "psnr": 9.697122192382812,
+          "ssim_uniform7": 0.12245940566062927,
+          "l1": 0.26735731959342957
+        }
+      },
+      "distribution": {
+        "endpoint_symmetric_chamfer_squared": 7.679984092712402,
+        "note": "Distribution geometry only; not material correspondence."
+      },
+      "trajectory_3d_error": null,
+      "material_correspondence_proven": false,
+      "endpoint_l1": [
+        0.28600848860600414,
+        0.2839694294859381
+      ],
+      "endpoint_rgb_gate_failed": true,
+      "endpoint_counts": [
+        512,
+        640
+      ],
+      "training_access_leaks": 0,
+      "observed_training_frames": [
+        10,
+        11,
+        13,
+        14,
+        15,
+        17,
+        18,
+        19,
+        21,
+        22,
+        23,
+        25,
+        26,
+        27,
+        29,
+        30
+      ],
+      "total_seconds_including_preprocessing": 155.0546420799801,
+      "stage_seconds": {
+        "triangulate_10": 13.141032712999731,
+        "endpoint_10": 11.964671636000276,
+        "triangulate_30": 16.218266734969802,
+        "endpoint_30": 13.496435638982803,
+        "coupling_and_fm": 1.8054864519508556,
+        "tracking": 0.0001520160585641861,
+        "interval_training": 20.311730689019896,
+        "evaluation_and_visualization": 74.06480187503621
+      },
+      "peak_torch_allocated_gpu_bytes": 368770048,
+      "gaussian_approximation": {
+        "samples_per_gaussian": 1024,
+        "gaussians": 8,
+        "mean_error": 0.03317631781101227,
+        "relative_covariance_frobenius": 0.06279394775629044,
+        "note": "Monte Carlo discrepancy includes sampling noise; not 3D trajectory ground truth."
+      },
+      "sinkhorn": {
+        "marginal_l1": 1.348322257399559e-06,
+        "epsilon_absolute": 5.495941162109375,
+        "iterations": 5000
+      }
+    },
+    {
+      "variant": "fm_persistent",
+      "run": "runs/coffee_fm_persistent",
+      "image": {
+        "view": {
+          "psnr": 9.633192479610443,
+          "ssim_uniform7": 0.10803253343328834,
+          "l1": 0.2692540753632784
+        },
+        "time": {
+          "psnr": 9.132053762323716,
+          "ssim_uniform7": 0.11514490948003882,
+          "l1": 0.28578617642907533
+        },
+        "joint": {
+          "psnr": 9.636411476135255,
+          "ssim_uniform7": 0.10810308903455734,
+          "l1": 0.2691520988941193
+        }
+      },
+      "distribution": {
+        "endpoint_symmetric_chamfer_squared": 7.820059776306152,
+        "note": "Distribution geometry only; not material correspondence."
+      },
+      "trajectory_3d_error": null,
+      "material_correspondence_proven": false,
+      "endpoint_l1": [
+        0.28600848685292635,
+        0.2839693909182268
+      ],
+      "endpoint_rgb_gate_failed": true,
+      "endpoint_counts": [
+        512,
+        640
+      ],
+      "training_access_leaks": 0,
+      "observed_training_frames": [
+        10,
+        11,
+        13,
+        14,
+        15,
+        17,
+        18,
+        19,
+        21,
+        22,
+        23,
+        25,
+        26,
+        27,
+        29,
+        30
+      ],
+      "total_seconds_including_preprocessing": 258.4038561109919,
+      "stage_seconds": {
+        "triangulate_10": 23.49989020708017,
+        "endpoint_10": 17.89117813494522,
+        "triangulate_30": 31.088686272967607,
+        "endpoint_30": 23.573626796947792,
+        "coupling_and_fm": 2.26262765401043,
+        "tracking": 0.0003074760315939784,
+        "interval_training": 32.99286539608147,
+        "evaluation_and_visualization": 122.74407802300993
+      },
+      "peak_torch_allocated_gpu_bytes": 368770048,
+      "gaussian_approximation": {
+        "samples_per_gaussian": 1024,
+        "gaussians": 8,
+        "mean_error": 0.024011440575122833,
+        "relative_covariance_frobenius": 0.05918552726507187,
+        "note": "Monte Carlo discrepancy includes sampling noise; not 3D trajectory ground truth."
+      },
+      "sinkhorn": {
+        "marginal_l1": 1.3652024790644646e-06,
+        "epsilon_absolute": 5.495941162109375,
+        "iterations": 5000
+      }
+    },
+    {
+      "variant": "canonical_4dgs",
+      "run": "runs/coffee_canonical_4dgs",
+      "image": {
+        "view": {
+          "psnr": 14.071932077407837,
+          "ssim_uniform7": 0.24017222598195076,
+          "l1": 0.1557925147935748
+        },
+        "time": {
+          "psnr": 13.301407017427332,
+          "ssim_uniform7": 0.22566739618778228,
+          "l1": 0.17211563972865834
+        },
+        "joint": {
+          "psnr": 14.066945838928223,
+          "ssim_uniform7": 0.24002010822296144,
+          "l1": 0.15583208203315735
+        }
+      },
+      "distribution": {
+        "endpoint_symmetric_chamfer_squared": 7.813337326049805
+      },
+      "trajectory_3d_error": null,
+      "material_correspondence_proven": false,
+      "endpoint_l1": [
+        0.28600848860600414,
+        0.2839694329920937
+      ],
+      "endpoint_rgb_gate_failed": true,
+      "endpoint_counts": [
+        512,
+        640
+      ],
+      "training_access_leaks": 0,
+      "observed_training_frames": [
+        10,
+        11,
+        13,
+        14,
+        15,
+        17,
+        18,
+        19,
+        21,
+        22,
+        23,
+        25,
+        26,
+        27,
+        29,
+        30
+      ],
+      "total_seconds_including_preprocessing": 257.1196746949572,
+      "stage_seconds": {
+        "triangulate_10": 23.9115106780082,
+        "endpoint_10": 17.828877781052142,
+        "triangulate_30": 31.922260064049624,
+        "endpoint_30": 23.305943245068192,
+        "baseline_training": 33.49858635396231,
+        "baseline_evaluation": 122.27942764596082
+      },
+      "peak_torch_allocated_gpu_bytes": 24501248,
+      "gaussian_approximation": null,
+      "sinkhorn": null
+    }
+  ],
+  "concurrent_group": {
+    "started_utc": "2026-09-23T06:44:19.100089+00:00",
+    "variants": [
+      "rgb",
+      "fm_persistent",
+      "canonical_4dgs"
+    ],
+    "execution": "three independent smoke jobs concurrently on one GPU; per-run timings include contention, not speed benchmarks",
+    "finished_utc": "2026-09-23T06:48:40.602847+00:00",
+    "wall_seconds": 261.502758,
+    "allocated_gpu_hours": 0.072639655,
+    "estimated_usd": null
+  },
+  "timing_comparison_valid": false,
+  "shared_data_acquisition": {
+    "source_url": "https://github.com/facebookresearch/Neural_3D_Video/releases/download/v1.0/coffee_martini.zip",
+    "source_repository": "https://github.com/facebookresearch/Neural_3D_Video",
+    "license": "CC-BY-NC-4.0",
+    "archive_size": 1186324684,
+    "archive_sha256_local": "cbc31291ce143e6f31a00f23a049663a61cc8793af8dab259dbc6e338a676816",
+    "integrity": "ZIP member CRC verified; SHA256 measured locally, no upstream digest supplied",
+    "utc": "2026-09-23T06:38:18.717421+00:00",
+    "data_root": "/workspace/datasets/coffee_martini",
+    "download_or_resume_and_extraction_seconds": 10.444884232012555,
+    "archive_retained": false,
+    "initial_curl_download_seconds_approx": 83,
+    "download_timing_note": "Initial curl download occurred before extraction script; approximately 83 seconds from curl progress. The 10.44-second script timing covers integrity verification/extraction.",
+    "raw_data_copied_into_project": false
+  },
+  "first_failed_run": {
+    "status": "failed",
+    "type": "RuntimeError",
+    "error": "Sinkhorn marginal L1 0.03125 > 0.002",
+    "seconds": 58.43947743496392
+  }
+}

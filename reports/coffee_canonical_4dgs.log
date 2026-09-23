@@ -1,0 +1,6 @@
+feature_dim: 64
+Number of points at initialisation :  512
+Deformation Net Set aabb [ 15.601392  12.166619 119.77892 ] [-47.302124  -12.151516    6.5631375]
+Voxel Plane: set aabb= Parameter containing:
+tensor([[ 15.6014,  12.1666, 119.7789],
+        [-47.3021, -12.1515,   6.5631]])
