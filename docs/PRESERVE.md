@@ -2,7 +2,7 @@
 
 인스턴스를 삭제하기 전에 아래를 외부로 복사하세요. `/workspace` 자체는 영구 저장소가 아닙니다.
 
-1. `new4dgs` Git remote에 push한 모든 commit. 현재 URL 미제공이므로 **미완료**.
+1. `new4dgs` Git remote에 push한 모든 commit. 원격 `https://github.com/andy4040/new4dgs`는 연결했지만 인증이 없어 push가 실패했으므로 **미완료**.
 2. `/workspace/new4dgs-backup.tar.gz` 및 `.sha256`. source.tar(코드/설정/문서/환경명세), new4dgs.git.bundle(모든 로컬 commit), MANIFEST.json(결과별 SHA256), results/ 포함. 로컬 생성만으로 외부 백업 완료가 되지 않습니다.
 3. 각 실제 연구 run의 `checkpoint.pt`, `endpoint_10.pt`, `endpoint_30.pt` 또는 `baseline.pt`; `config.json`, `inventory.json`, `metrics.json`, `endpoints.json`, `losses.json`, `sinkhorn.json`, `tracks.json`, `*_access.json`.
 4. endpoint RGB/target/alpha/depth, trajectories.npz(좌표/ID/색), trajectories_3d.png, projection_*.png 및 평가 render.

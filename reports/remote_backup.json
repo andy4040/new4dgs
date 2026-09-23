@@ -1,0 +1,9 @@
+{
+  "url": "https://github.com/andy4040/new4dgs",
+  "public": true,
+  "remote_initial_commit": "d0b53dd135af98682bc48a6b88e142fd30d9ca03",
+  "initial_history_merged": true,
+  "remote_push_succeeded": false,
+  "failure": "HTTPS username unavailable with terminal prompts disabled; no configured token, credential helper authentication or SSH identity found",
+  "next_action": "Authenticate GitHub on this Vast instance, then git push -u origin main"
+}

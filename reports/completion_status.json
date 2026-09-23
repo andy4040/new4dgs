@@ -16,7 +16,7 @@
     "zero forbidden training/triangulation accesses in all four actual runs"
   ],
   "failed_or_blocked": [
-    "remote git backup: repository URL/access not supplied; account URL is insufficient",
+    "remote git backup: origin and initial history verified; push failed because GitHub HTTPS/SSH credentials are absent",
     "off-instance artifact backup: persistent destination not supplied",
     "all actual endpoint RGB quality gates failed; results explicitly labeled inaccurate-endpoint smoke"
   ],
@@ -35,5 +35,6 @@
     "actual N3DV masked tracking and temporal appearance experiments"
   ],
   "remote_push_succeeded": false,
-  "material_correspondence_proven": false
+  "material_correspondence_proven": false,
+  "remote_url": "https://github.com/andy4040/new4dgs"
 }
