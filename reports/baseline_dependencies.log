@@ -1,0 +1,9 @@
+Using Python 3.12.14 environment at: /venv/main
+Resolved 59 packages in 725ms
+Downloading plotly (9.2MiB)
+Downloading pydantic-core (2.0MiB)
+Downloading dash (8.5MiB)
+Downloading open3d (382.2MiB)
+ Downloaded pydantic-core
+ Downloaded dash
+ Downloaded plotly

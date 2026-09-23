@@ -1,0 +1,75 @@
+/venv/main/lib/python3.12/site-packages/torch/autograd/graph.py:824: UserWarning: Attempting to run cuBLAS, but there was no current CUDA context! Attempting to set the primary context... (Triggered internally at /pytorch/aten/src/ATen/cuda/CublasHandlePool.cpp:181.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+{
+  "experiment": "synthetic_known_initial_geometry_rgb_training",
+  "steps": 80,
+  "device": "cuda",
+  "oracle_velocity_supervision": false,
+  "reference_geometry_oracle": true,
+  "train_times": [
+    0,
+    0.15,
+    0.3,
+    0.45,
+    0.6,
+    0.75,
+    0.9,
+    1.0
+  ],
+  "evaluation_times": [
+    0.1,
+    0.25,
+    0.5,
+    0.8
+  ],
+  "results": {
+    "rgb": {
+      "heldout_3d_mean_error": 0.256762258708477,
+      "heldout_image": {
+        "psnr": 20.32128930091858,
+        "ssim_uniform7": 0.4179666358977556,
+        "l1": 0.03966512577608228
+      },
+      "approximation": {
+        "samples_per_gaussian": 1024,
+        "gaussians": 6,
+        "mean_error": 0.0033644377253949642,
+        "relative_covariance_frobenius": 0.07045196741819382,
+        "note": "Monte Carlo discrepancy includes sampling noise; not 3D trajectory ground truth."
+      },
+      "seconds_including_fm": 10.365070753963664
+    },
+    "fm_rgb": {
+      "heldout_3d_mean_error": 0.24904942139983177,
+      "heldout_image": {
+        "psnr": 20.285273551940918,
+        "ssim_uniform7": 0.4176915008574724,
+        "l1": 0.03999550407752395
+      },
+      "approximation": {
+        "samples_per_gaussian": 1024,
+        "gaussians": 6,
+        "mean_error": 0.003100945381447673,
+        "relative_covariance_frobenius": 0.0541139654815197,
+        "note": "Monte Carlo discrepancy includes sampling noise; not 3D trajectory ground truth."
+      },
+      "seconds_including_fm": 9.347011281060986
+    },
+    "fm_persistent": {
+      "heldout_3d_mean_error": 0.23826008662581444,
+      "heldout_image": {
+        "psnr": 20.220993995666504,
+        "ssim_uniform7": 0.4126594811677933,
+        "l1": 0.04051582305692136
+      },
+      "approximation": {
+        "samples_per_gaussian": 1024,
+        "gaussians": 6,
+        "mean_error": 0.003052367828786373,
+        "relative_covariance_frobenius": 0.06403660029172897,
+        "note": "Monte Carlo discrepancy includes sampling noise; not 3D trajectory ground truth."
+      },
+      "seconds_including_fm": 9.357955670915544
+    }
+  }
+}
