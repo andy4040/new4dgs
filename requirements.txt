@@ -1,0 +1,10 @@
+# CUDA wheels: see README; installed versions captured in reports/environment-lock.txt
+ torch==2.7.1
+ torchvision==0.22.1
+ numpy
+ scipy
+ pillow
+ opencv-python-headless
+ matplotlib
+ pytest
+ pyyaml
