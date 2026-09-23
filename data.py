@@ -10,12 +10,17 @@ import torch
 from PIL import Image
 
 
+def frame_bounds(cfg):
+    return cfg.get('frame_start',10),cfg.get('frame_end',30)
+
+
 def validate_split(cfg):
-    a, b = cfg['train_frames'], cfg['heldout_frames']
-    assert len(a) == len(set(a)) == 16 and len(b) == len(set(b)) == 5
-    assert not set(a) & set(b) and set(a + b) == set(range(10, 31))
-    assert 10 in a and 30 in a and cfg['test_camera'] == 'cam00'
-    assert cfg['frame_index_origin'] == 0
+    a,b=cfg['train_frames'],cfg['heldout_frames'];lo,hi=frame_bounds(cfg)
+    assert 0<=lo<hi and len(a)==len(set(a)) and len(b)==len(set(b))
+    assert a and b and not set(a)&set(b) and set(a+b)==set(range(lo,hi+1))
+    assert lo in a and hi in a and cfg['test_camera']=='cam00'
+    assert cfg['frame_index_origin']==0
+    if 'frame_start' not in cfg:assert len(a)==16 and len(b)==5
 
 
 class N3DV:
@@ -58,7 +63,7 @@ class N3DV:
             count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if cap is not None else len(files)
             if cap is not None: cap.release()
             self.inventory[name] = {'images': len(files), 'video_frames': count, 'fps': fps, 'calibration_row': i, 'calibration_height':float(h), 'calibration_width':float(w), 'calibration_focal':float(f)}
-            if not files and count < 31: raise ValueError(f'{name}: fewer than 31 frames')
+            if count <= frame_bounds(cfg)[1]: raise ValueError(f'{name}: fewer than 31 frames')
         centers = np.array([self.cameras[n]['center'] for n in self.train_cameras])
         self.extent = float(np.linalg.norm(centers-centers.mean(0), axis=1).max()*1.1)
         if self.extent <= 0: raise ValueError('Degenerate camera calibration')
@@ -77,6 +82,12 @@ class N3DV:
         self.audit.append({'split':split,'camera':camera,'frame':frame})
         key = (camera, frame)
         if key not in self.cache:
+            cache_path=Path(self.cfg['image_cache'])/f"w{self.cfg['image_width']}"/camera/f'{frame:04d}.png' if self.cfg.get('image_cache') else None
+            if cache_path is not None and cache_path.exists():
+                img=np.array(Image.open(cache_path).convert('RGB'));c=self.cameras[camera]
+                if img.shape[:2]!=(c['height'],c['width']):raise ValueError('Cached image shape mismatch')
+                self.cache[key]=torch.from_numpy(img.copy()).float()/255
+                return self.cache[key]
             folder = self.root / camera / 'images'
             candidates = [p for p in folder.glob('*') if p.suffix.lower() in ('.png','.jpg','.jpeg') and p.stem.isdigit() and int(p.stem)==frame]
             if len(candidates) > 1: raise ValueError('Duplicate image frame')
@@ -102,5 +113,6 @@ class N3DV:
         Path(path).write_text(json.dumps({'inventory':self.inventory,'accesses':self.audit},indent=2))
 
 
-def normalized_time(frame):
-    return (frame - 10) / 20.
+def normalized_time(frame,cfg=None):
+    lo,hi=frame_bounds(cfg or {})
+    return (frame-lo)/(hi-lo)

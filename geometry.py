@@ -37,7 +37,7 @@ class Gaussians(nn.Module):
 
 
 def triangulate(data, frame, limit):
-    if frame not in (10,30) or frame not in data.cfg['train_frames']: raise PermissionError(frame)
+    if frame not in (data.cfg.get('frame_start',10),data.cfg.get('frame_end',30)) or frame not in data.cfg['train_frames']: raise PermissionError(frame)
     sift=cv2.SIFT_create(nfeatures=4000)
     features={}; imgs={}; projections={}
     for name in data.train_cameras:

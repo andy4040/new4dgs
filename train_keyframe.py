@@ -17,7 +17,7 @@ def main():
     out.mkdir(parents=True);start=time.perf_counter()
     def dump(name,obj):(out/name).write_text(json.dumps(obj,indent=2))
     dump('config.json',cfg);torch.set_num_threads(4);torch.manual_seed(cfg['seed']);random.seed(cfg['seed'])
-    device=cfg['device'];frame=10;data=N3DV(cfg)
+    device=cfg['device'];frame=cfg.get('frame_start',10);data=N3DV(cfg)
     if args.resume:
         saved=torch.load(args.resume,map_location=device,weights_only=False);s=saved['reference']
         g=Gaussians(s['xyz'],s['color_logits'].sigmoid(),1.).to(device);g.load_state_dict(s)

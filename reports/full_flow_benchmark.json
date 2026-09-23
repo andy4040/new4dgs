@@ -1,0 +1,19 @@
+{
+  "measurements": [
+    {
+      "gaussians": 97884,
+      "rk4_step": 0.25,
+      "seconds": 5.040014415979385,
+      "torch_peak_bytes": 1368216576,
+      "grad_norm": 0.08456152883854884
+    },
+    {
+      "gaussians": 97884,
+      "rk4_step": 0.125,
+      "seconds": 4.77856616396457,
+      "torch_peak_bytes": 2658250240,
+      "grad_norm": 0.08536428480715585
+    }
+  ],
+  "note": "Scalability only; frame-10 reference, untrained velocity; concurrent keyframe optimization on same GPU affects timings."
+}

@@ -36,3 +36,14 @@ def test_missing_camera_id_uses_sorted_calibration_rows(tmp_path):
     assert d.inventory['cam05']['calibration_row']==2
     assert d.cameras['cam05']['center']==[1.,0.,0.]
     with pytest.raises(PermissionError):d.image('cam05',12,'train')
+
+
+def test_full_sequence_split_and_time():
+    from data import validate_split,normalized_time
+    held=list(range(2,299,5));cfg=dict(frame_start=0,frame_end=299,train_frames=[f for f in range(300) if f not in held],heldout_frames=held,test_camera='cam00',frame_index_origin=0)
+    validate_split(cfg)
+    assert len(cfg['train_frames'])==240 and len(held)==60
+    assert normalized_time(0,cfg)==0 and normalized_time(299,cfg)==1
+    assert normalized_time(10)==0 and normalized_time(30)==1
+    cfg['train_frames'].append(2)
+    with pytest.raises(AssertionError):validate_split(cfg)

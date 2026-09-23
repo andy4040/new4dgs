@@ -207,3 +207,51 @@ Result: [30 dB keyframe report](reports/coffee_keyframe_30db.md). Training mean
 27.983 dB. Automatic target stop and separate plateau control are verified.
 The original 10000-step experiment is reproducible from commit `22cdf8c`; the
 current runner adds checkpoint selection and stopping described above.
+
+### Full coffee_martini sequence (in progress)
+
+Full-sequence configuration: frames 0–299, 240 training times and 60 held-out
+times (`2, 7, ..., 297`), cam00 excluded from all training. Exact lists are in
+`configs/coffee_full_keyframe.json` and `configs/coffee_full_motion.json`.
+Normalized ODE time is `frame/299`; video time is `frame/30` seconds, so world
+velocity per video second is network velocity times `30/299`.
+
+```bash
+/venv/main/bin/python train_keyframe.py --config configs/coffee_full_keyframe.json --out runs/coffee_full_keyframe_32db
+/venv/main/bin/python scripts/cache_video_frames.py --config configs/coffee_full_keyframe.json
+# Run only after the frame-0 training-camera mean PSNR reaches 32 dB:
+./scripts/run_full_motion.sh
+```
+
+Frame-0 reference must pass 32 dB at 384x288 across all 17 training cameras.
+The motion runner verifies this before optimization. It uses the entire fixed
+reference Gaussian set, RK4 with step .125, and shared normalized-coordinate
+velocity MLP (3 hidden layers, width 64, SiLU, 3 spatial and 4 temporal Fourier
+bands). Analytic spatial Jacobians retain parameter gradients and are checked
+against autograd. Chunked ODE recomputation preserves numerical outputs and
+gradients while reducing activation memory. Appearance parameters are trainable
+but constant across time. Weak acceleration regularization is sampled at fixed
+reference positions; no measured material correspondences are available.
+
+Automatic motion stopping checks a fixed training-only subset of 16 times and
+4 cameras every 480 updates (minimum 2400 updates, patience 5, L1 min_delta .0001).
+This subset is explicit in the config; the full-sequence runner does not claim
+that its monitor covers all training images. Maximum 12000 updates. Best and
+latest resumable checkpoints are stored separately, with RNG/optimizer state.
+Final evaluation separately reports view/time/joint splits and writes a cam00
+video with target and render side by side, fixed-ID trajectories, and step-size
+and covariance-approximation audits. These final artifacts are only available
+when the real motion run completes.
+
+`deployment/` contains supervisor configuration and wrapper copies. The training
+service is installed with autostart disabled and does not open a network port.
+Start after the reference gate succeeds: `supervisorctl start new4dgs-training`.
+Check `supervisorctl status new4dgs-training` and
+`/workspace/new4dgs-full-motion.log`. Restart through the wrapper resumes latest
+checkpoint; failures stop the job instead of entering an unlimited retry loop.
+
+Validation: 22 tests pass; small synthetic full-runner execution completed with
+plateau stop, evaluation, video and trajectory output. Real full-sequence motion
+training and final quality are not established by those tests. The current
+frame-0 geometry run is in progress; its live files are under
+`runs/coffee_full_keyframe_32db/` (excluded from Git).

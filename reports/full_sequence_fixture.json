@@ -1,0 +1,24 @@
+{
+  "status": {
+    "status": "completed",
+    "stop_reason": "plateau",
+    "executed_steps": 2,
+    "selected_step": 2,
+    "elapsed_seconds": 8.451231084996834,
+    "allocated_gpu_hours": 0.0023475641902768983,
+    "torch_peak_bytes": 20401152,
+    "material_correspondence_proven": false
+  },
+  "early_stopping": {
+    "reason": "plateau",
+    "executed_steps": 2,
+    "best_loss": 0.4926554461320241,
+    "best_step": 2,
+    "bad_evaluations": 2,
+    "patience": 2,
+    "min_delta": 1.0,
+    "min_steps": 0
+  },
+  "video_created": true,
+  "note": "Synthetic fixture smoke validates full_sequence runner, stop, evaluation and artifact generation; not real 300-frame training."
+}
