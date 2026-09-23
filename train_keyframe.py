@@ -59,7 +59,7 @@ def main():
         for i in range(cfg['endpoint_steps']):
             step=i+1;n=data.train_cameras[i%len(data.train_cameras)];opt.param_groups[0]['lr']=position_lr(cfg,i,data.extent)
             r=render(g.xyz,g.covariance(),g.color(),g.opacity(),cameras[n]);diff=r['rgb']-targets[n]
-            loss=diff.square().mean()+cfg.get('keyframe_l1_weight',.1)*diff.abs().mean()
+            loss=diff.abs().mean() if cfg.get('keyframe_objective','mse_l1')=='l1' else diff.square().mean()+cfg.get('keyframe_l1_weight',.1)*diff.abs().mean()
             if not torch.isfinite(loss):raise FloatingPointError(f'Nonfinite loss step {i}')
             opt.zero_grad();loss.backward()
             scores.add_(g.xyz.grad.detach().norm(dim=-1));opt.step();losses.append(float(loss.detach()))

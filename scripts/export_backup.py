@@ -18,7 +18,7 @@ try:
  pushed=bool(remote_tip) and remote_tip[0]==commit
 except (subprocess.SubprocessError,OSError):
  pushed=False
-selected=['coffee_keyframe_10k','synthetic','fixture_fm_rgb_v2','fixture_cuda','fixture_baseline','fixture_reloaded','fixture_tracks','fixture_appearance','n3dv_attempt','coffee_inventory','coffee_fm_rgb','coffee_fm_rgb_v2','coffee_rgb','coffee_fm_persistent','coffee_canonical_4dgs']
+selected=['coffee_keyframe_30db','coffee_keyframe_30db_v2','fixture_early_stop','fixture_baseline_early_stop','coffee_keyframe_10k','synthetic','fixture_fm_rgb_v2','fixture_cuda','fixture_baseline','fixture_reloaded','fixture_tracks','fixture_appearance','n3dv_attempt','coffee_inventory','coffee_fm_rgb','coffee_fm_rgb_v2','coffee_rgb','coffee_fm_persistent','coffee_canonical_4dgs']
 manifest={'commit':commit,'remote_push_succeeded':pushed,'external_artifact_backup_succeeded':False,
           'note':'Download or copy off this nonpersistent Vast instance before deletion. No raw data included.','files':[]}
 with tempfile.TemporaryDirectory(prefix='new4dgs_export_') as tmp:

@@ -201,3 +201,9 @@ reason (`max_steps`), never labeled convergence.
 All evaluation overhead is included in training-stage wall time. Splitting resets
 plateau patience and Adam because parameter shapes change. A resumed keyframe
 run also resets its optimizer/schedule/stopper and reports *additional* steps.
+
+Result: [30 dB keyframe report](reports/coffee_keyframe_30db.md). Training mean
+30.247 dB reached after 11000 additional updates (97884 Gaussians); final cam00
+27.983 dB. Automatic target stop and separate plateau control are verified.
+The original 10000-step experiment is reproducible from commit `22cdf8c`; the
+current runner adds checkpoint selection and stopping described above.

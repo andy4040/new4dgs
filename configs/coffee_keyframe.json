@@ -71,5 +71,6 @@
     "patience": 5,
     "min_delta": 0.0001,
     "min_steps": 2000
-  }
+  },
+  "keyframe_objective": "l1"
 }

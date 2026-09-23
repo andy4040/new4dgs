@@ -1,0 +1,180 @@
+{
+  "fixture_early_stop": {
+    "trajectory": {
+      "enabled": true,
+      "reason": "plateau",
+      "executed_steps": 3,
+      "monitor": [
+        {
+          "step": 1,
+          "train_rgb_l1": 0.4932039761915803
+        },
+        {
+          "step": 2,
+          "train_rgb_l1": 0.49318948946893215
+        },
+        {
+          "step": 3,
+          "train_rgb_l1": 0.4931753696873784
+        }
+      ],
+      "best_loss": 0.4931753696873784,
+      "best_step": 3,
+      "bad_evaluations": 2,
+      "patience": 2,
+      "min_delta": 1.0,
+      "min_steps": 0
+    },
+    "endpoint": [
+      {
+        "reason": "plateau",
+        "executed_steps": 3,
+        "monitor": [
+          {
+            "step": 1,
+            "train_l1": 0.4953739047050476
+          },
+          {
+            "step": 2,
+            "train_l1": 0.494505375623703
+          },
+          {
+            "step": 3,
+            "train_l1": 0.49317875504493713
+          }
+        ],
+        "best_loss": 0.49317875504493713,
+        "best_step": 3,
+        "bad_evaluations": 2,
+        "patience": 2,
+        "min_delta": 1.0,
+        "min_steps": 0
+      },
+      {
+        "reason": "plateau",
+        "executed_steps": 3,
+        "monitor": [
+          {
+            "step": 1,
+            "train_l1": 0.49440789222717285
+          },
+          {
+            "step": 2,
+            "train_l1": 0.49333763122558594
+          },
+          {
+            "step": 3,
+            "train_l1": 0.49171721935272217
+          }
+        ],
+        "best_loss": 0.49171721935272217,
+        "best_step": 3,
+        "bad_evaluations": 2,
+        "patience": 2,
+        "min_delta": 1.0,
+        "min_steps": 0
+      }
+    ],
+    "fm": {
+      "reason": "plateau",
+      "monitor": [
+        {
+          "step": 1,
+          "fixed_sample_fm_loss": 0.018477443605661392
+        },
+        {
+          "step": 2,
+          "fixed_sample_fm_loss": 0.018075359985232353
+        },
+        {
+          "step": 3,
+          "fixed_sample_fm_loss": 0.017791595309972763
+        }
+      ],
+      "best_loss": 0.017791595309972763,
+      "best_step": 3,
+      "bad_evaluations": 2,
+      "patience": 2,
+      "min_delta": 1.0,
+      "min_steps": 0
+    }
+  },
+  "fixture_baseline_early_stop": {
+    "trajectory": {
+      "reason": "plateau",
+      "monitor": [
+        {
+          "step": 1,
+          "train_rgb_l1": 0.4926450289785862
+        },
+        {
+          "step": 2,
+          "train_rgb_l1": 0.49228269420564175
+        },
+        {
+          "step": 3,
+          "train_rgb_l1": 0.4919112464413047
+        }
+      ],
+      "executed_steps": 3,
+      "best_loss": 0.4919112464413047,
+      "best_step": 3,
+      "bad_evaluations": 2,
+      "patience": 2,
+      "min_delta": 1.0,
+      "min_steps": 0
+    },
+    "endpoint": [
+      {
+        "reason": "plateau",
+        "executed_steps": 3,
+        "monitor": [
+          {
+            "step": 1,
+            "train_l1": 0.4953739047050476
+          },
+          {
+            "step": 2,
+            "train_l1": 0.494505375623703
+          },
+          {
+            "step": 3,
+            "train_l1": 0.49317875504493713
+          }
+        ],
+        "best_loss": 0.49317875504493713,
+        "best_step": 3,
+        "bad_evaluations": 2,
+        "patience": 2,
+        "min_delta": 1.0,
+        "min_steps": 0
+      },
+      {
+        "reason": "plateau",
+        "executed_steps": 3,
+        "monitor": [
+          {
+            "step": 1,
+            "train_l1": 0.49440789222717285
+          },
+          {
+            "step": 2,
+            "train_l1": 0.49333763122558594
+          },
+          {
+            "step": 3,
+            "train_l1": 0.49171721935272217
+          }
+        ],
+        "best_loss": 0.49171721935272217,
+        "best_step": 3,
+        "bad_evaluations": 2,
+        "patience": 2,
+        "min_delta": 1.0,
+        "min_steps": 0
+      }
+    ]
+  },
+  "note": "Intentionally oversized min_delta=1 with patience=2 forces stop after 3 evaluations; validates control flow, not scene convergence.",
+  "unit_tests": "19 passed"
+}
