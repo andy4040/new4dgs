@@ -1,0 +1,17 @@
+[
+  {
+    "name": "4DGaussians",
+    "url": "https://github.com/hustvl/4DGaussians.git",
+    "commit": "843d5ac636c37e4b611242287754f3d4ed150144"
+  },
+  {
+    "name": "depth-diff-gaussian-rasterization",
+    "url": "https://github.com/ingra14m/depth-diff-gaussian-rasterization",
+    "commit": "e49506654e8e11ed8a62d22bcb693e943fdecacf"
+  },
+  {
+    "name": "simple-knn",
+    "url": "https://gitlab.inria.fr/bkerbl/simple-knn.git",
+    "commit": "44f764299fa305faf6ec5ebd99939e0508331503"
+  }
+]

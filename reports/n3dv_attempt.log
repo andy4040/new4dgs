@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/workspace/new4dgs/run.py", line 168, in <module>
+    main(p.parse_args())
+  File "/workspace/new4dgs/run.py", line 45, in main
+    try: execute(args,cfg,out,start)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/new4dgs/run.py", line 52, in execute
+    data=N3DV(cfg);device=cfg['device']; timings={}
+         ^^^^^^^^^
+  File "/workspace/new4dgs/data.py", line 25, in __init__
+    raise FileNotFoundError('Set --data to external coffee_martini directory; data is not bundled.')
+FileNotFoundError: Set --data to external coffee_martini directory; data is not bundled.

@@ -1,0 +1,10 @@
+Using Python 3.12.14 environment at: /venv/main
+Resolved 2 packages in 3.72s
+   Building diff-gaussian-rasterization @ file:///workspace/4DGaussians/submodules/depth-diff-gaussian-rasterization
+   Building simple-knn @ file:///workspace/4DGaussians/submodules/simple-knn
+      Built simple-knn @ file:///workspace/4DGaussians/submodules/simple-knn
+      Built diff-gaussian-rasterization @ file:///workspace/4DGaussians/submodules/depth-diff-gaussian-rasterization
+Prepared 2 packages in 1m 11s
+Installed 2 packages in 11ms
+ + diff-gaussian-rasterization==0.0.0 (from file:///workspace/4DGaussians/submodules/depth-diff-gaussian-rasterization)
+ + simple-knn==0.0.0 (from file:///workspace/4DGaussians/submodules/simple-knn)

@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "reference_count": 16,
+  "deformation_gradient_norm": 0.0237261056627176,
+  "one_optimizer_step": true,
+  "n3dv_execution": false,
+  "baseline_type": "actual upstream HexPlane deformation / shared reference renderer"
+}

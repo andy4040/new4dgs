@@ -1,0 +1,15 @@
+{
+  "scale_rotation_vs_covariance_max_error": 1.043081283569336e-07,
+  "rgb_to_velocity_gradient_norm": 10.936843384522945,
+  "activated_scale": "stddev, not variance or log-scale",
+  "quaternion": "normalized wxyz",
+  "covariance_order": [
+    "xx",
+    "xy",
+    "xz",
+    "yy",
+    "yz",
+    "zz"
+  ],
+  "status": "passed"
+}

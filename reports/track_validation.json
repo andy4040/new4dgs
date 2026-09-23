@@ -1,0 +1,5 @@
+{
+  "count": 866,
+  "weighted_mean_pixel_error": 4.865438902873906,
+  "scope": "training track consistency; not independent validation or 3D ground truth"
+}

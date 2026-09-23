@@ -1,0 +1,7 @@
+feature_dim: 64
+Number of points at initialisation :  16
+Deformation Net Set aabb [0.5852788 0.5140572 2.5650213] [ 0.01396466 -0.09787798  1.9043111 ]
+Voxel Plane: set aabb= Parameter containing:
+tensor([[ 0.5853,  0.5141,  2.5650],
+        [ 0.0140, -0.0979,  1.9043]])
+{'status': 'passed', 'reference_count': 16, 'deformation_gradient_norm': 0.0237261056627176, 'one_optimizer_step': True, 'n3dv_execution': False, 'baseline_type': 'actual upstream HexPlane deformation / shared reference renderer'}

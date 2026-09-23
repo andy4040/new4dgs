@@ -1,0 +1,33 @@
+{
+  "completed": [
+    "independent implementation, not restoration",
+    "strict N3DV format loader (fixture verified)",
+    "14 numerical and data access tests",
+    "CUDA covariance convention and RGB gradient validation",
+    "three synthetic RGB trajectory variants",
+    "calibrated synthetic fixture endpoint/FM/ODE/evaluation/visualization",
+    "canonical upstream architecture fixture baseline",
+    "checkpoint reload equality",
+    "synthetic masked LK supervision and restricted appearance ablation",
+    "local staged git commits"
+  ],
+  "failed_or_blocked": [
+    "actual N3DV attempt: external coffee_martini directory absent",
+    "remote git backup: repository URL/access not supplied",
+    "off-instance artifact backup: persistent destination not supplied"
+  ],
+  "fixed_failures": [
+    "CUDA headers FLT_MAX/uintptr_t via compiler forced includes",
+    "upstream AABB CPU/CUDA placement in adapter",
+    "synthetic fixture remap dtype"
+  ],
+  "not_executed": [
+    "actual camera count and coffee_martini calibration inspection",
+    "actual N3DV four-way comparison",
+    "N3DV material correspondence validation",
+    "long research configuration",
+    "actual N3DV masked tracking and appearance experiments"
+  ],
+  "remote_push_succeeded": false,
+  "material_correspondence_proven": false
+}

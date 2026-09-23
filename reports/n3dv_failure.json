@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "type": "FileNotFoundError",
+  "error": "Set --data to external coffee_martini directory; data is not bundled.",
+  "seconds": 0.0073831831105053425
+}

@@ -1,0 +1,27 @@
+{
+  "fixture_is_n3dv": false,
+  "checkpoint_reload_metrics_equal": true,
+  "forbidden_training_accesses": 0,
+  "runs_completed": {
+    "fixture_fm_rgb_v2": {
+      "status": "completed",
+      "smoke_only": true
+    },
+    "fixture_cuda": {
+      "status": "completed",
+      "smoke_only": true
+    },
+    "fixture_baseline": {
+      "status": "completed",
+      "smoke_only": true
+    },
+    "fixture_tracks": {
+      "status": "completed",
+      "smoke_only": true
+    },
+    "fixture_appearance": {
+      "status": "completed",
+      "smoke_only": true
+    }
+  }
+}

@@ -1,0 +1,19 @@
+/venv/main/lib/python3.12/site-packages/torch/autograd/graph.py:824: UserWarning: Attempting to run cuBLAS, but there was no current CUDA context! Attempting to set the primary context... (Triggered internally at /pytorch/aten/src/ATen/cuda/CublasHandlePool.cpp:181.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+{
+  "view": {
+    "psnr": 6.9698977172374725,
+    "ssim_uniform7": 0.022347298334352672,
+    "l1": 0.429457588121295
+  },
+  "time": {
+    "psnr": 7.002248954772949,
+    "ssim_uniform7": 0.022364448010921478,
+    "l1": 0.42628584802150726
+  },
+  "joint": {
+    "psnr": 6.970762634277344,
+    "ssim_uniform7": 0.02193584032356739,
+    "l1": 0.4294110357761383
+  }
+}
