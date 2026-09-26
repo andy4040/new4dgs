@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 cd /workspace/new4dgs
-config=configs/coffee_full_motion.json
-output=runs/coffee_full_motion
+config=${NEW4DGS_MOTION_CONFIG:-configs/coffee_full_motion_enhanced.json}
+output=${NEW4DGS_MOTION_OUTPUT:-runs/coffee_full_motion_enhanced}
 if /venv/main/bin/python - "$output/status.json" <<'PY'
 import json,sys
 from pathlib import Path
@@ -11,6 +11,8 @@ PY
 then exit 0; fi
 if [[ -f "$output/latest.pt" ]]; then
   exec /venv/main/bin/python -u full_sequence.py --config "$config" --out "$output" --resume "$output/latest.pt"
+elif [[ -f "$output/preparation_latest.pt" ]]; then
+  exec /venv/main/bin/python -u full_sequence.py --config "$config" --out "$output" --resume "$output/preparation_latest.pt"
 else
   exec /venv/main/bin/python -u full_sequence.py --config "$config" --out "$output"
 fi

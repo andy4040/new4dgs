@@ -17,6 +17,15 @@ def main(a):
     cfg=dict(saved['config']);cfg['device']=a.device
     if a.data:cfg['data_root']=str(Path(a.data).expanduser().resolve())
     data=N3DV(cfg);out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
+    if saved.get('model_format')=='full_sequence_v2' or 'layers.0.weight' in saved.get('velocity',{}):
+        from sequence_model import load_sequence
+        from full_sequence import evaluate_all
+        if saved.get('phase','motion')!='motion':
+            raise ValueError('Evaluate a frozen motion checkpoint, not a preparation checkpoint')
+        model=load_sequence(cfg,saved,data.extent)
+        model.eval()
+        evaluate_all(cfg,data,model,out)
+        return
     ref=saved['reference'];g=Gaussians(ref['xyz'],torch.ones_like(ref['xyz'])*.5,.01).to(a.device);g.load_state_dict(ref)
     v=Velocity(cfg['velocity_width']).to(a.device);v.load_state_dict(saved['velocity']);v.eval()
     appearance=Appearance(len(g.xyz),cfg['appearance_time_rank'],a.device);appearance.load_state_dict(saved['appearance'])

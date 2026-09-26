@@ -19,7 +19,7 @@ class Gaussians(nn.Module):
         self.log_scale=nn.Parameter(initial_scale.expand_as(xyz).clamp_min(1e-8).log().clone())
         self.lower=nn.Parameter(torch.zeros_like(xyz))
         self.color_logits=nn.Parameter(torch.logit(rgb.clamp(.01,.99)))
-        self.opacity_logits=nn.Parameter(torch.full((len(xyz),),-1.,device=xyz.device))
+        self.opacity_logits=nn.Parameter(torch.full((len(xyz),),-1.,device=xyz.device,dtype=xyz.dtype))
         self.register_buffer('ids',torch.arange(len(xyz),device=xyz.device))
         self.register_buffer('parent_ids',torch.full((len(xyz),),-1,device=xyz.device,dtype=torch.long))
 
@@ -30,7 +30,7 @@ class Gaussians(nn.Module):
         return L+off
 
     def covariance(self):
-        L=self.factor(); return L@L.transpose(-1,-2)+torch.eye(3,device=L.device)*1e-8
+        L=self.factor(); return L@L.transpose(-1,-2)+torch.eye(3,device=L.device,dtype=L.dtype)*1e-8
 
     def color(self): return self.color_logits.sigmoid()
     def opacity(self): return self.opacity_logits.sigmoid()
@@ -134,7 +134,7 @@ def initial_scales(xyz,extent,cfg):
 
 
 @torch.no_grad()
-def split_gaussians(model, scores, fraction=.25):
+def split_gaussians(model, scores, fraction=.25, return_sources=False):
     """Split high-score Gaussians along principal covariance axis; explicit ancestry.
 
     Parent is retired, two new IDs assigned, covariance shrunk along split axis.
@@ -157,4 +157,8 @@ def split_gaussians(model, scores, fraction=.25):
     next_id=int(model.ids.max())+1;new_ids=torch.arange(next_id,next_id+2*len(idx),device=xyz.device)
     parents=model.ids[idx].repeat(2)
     result.ids.copy_(torch.cat([model.ids[keep],new_ids]));result.parent_ids.copy_(torch.cat([model.parent_ids[keep],parents]))
-    return result,dict(retired_ids=model.ids[idx].cpu().tolist(),child_ids=new_ids.cpu().tolist(),parent_ids=parents.cpu().tolist())
+    event=dict(retired_ids=model.ids[idx].cpu().tolist(),child_ids=new_ids.cpu().tolist(),parent_ids=parents.cpu().tolist())
+    if return_sources:
+        sources=torch.cat([torch.arange(n,device=xyz.device)[keep],idx,idx])
+        return result,event,sources
+    return result,event

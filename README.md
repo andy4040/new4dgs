@@ -224,14 +224,16 @@ velocity per video second is network velocity times `30/299`.
 ```
 
 Frame-0 reference must pass 32 dB at 384x288 across all 17 training cameras.
-The motion runner verifies this before optimization. It uses the entire fixed
-reference Gaussian set, RK4 with step .125, and shared normalized-coordinate
-velocity MLP (3 hidden layers, width 64, SiLU, 3 spatial and 4 temporal Fourier
-bands). Analytic spatial Jacobians retain parameter gradients and are checked
-against autograd. Chunked ODE recomputation preserves numerical outputs and
-gradients while reducing activation memory. Appearance parameters are trainable
-but constant across time. Weak acceleration regularization is sampled at fixed
-reference positions; no measured material correspondences are available.
+The motion runner verifies this before optimization. The original configuration
+`configs/coffee_full_motion.json` retains frozen geometry and constant appearance
+for existing runs. The enhanced configuration below adds multi-frame geometry
+preparation and view/time color before fixed-ID motion training. Both use RK4
+with step .125 and a shared normalized-coordinate velocity MLP (3 hidden layers,
+width 64, SiLU, 3 spatial and 4 temporal Fourier bands). Analytic spatial Jacobians
+retain parameter gradients. Chunked ODE recomputation preserves gradients to
+both velocity and the reference geometry during preparation. Weak acceleration
+regularization remains sampled at fixed reference positions; no measured material
+correspondences are available.
 
 Automatic motion stopping checks a fixed training-only subset of 16 times and
 4 cameras every 480 updates (minimum 2400 updates, patience 5, L1 min_delta .0001).
@@ -255,3 +257,59 @@ plateau stop, evaluation, video and trajectory output. Real full-sequence motion
 training and final quality are not established by those tests. The current
 frame-0 geometry run is in progress; its live files are under
 `runs/coffee_full_keyframe_32db/` (excluded from Git).
+
+### View/time appearance and multi-frame geometry preparation
+
+`configs/coffee_full_motion_enhanced.json` enables both additions. The wrapper
+`scripts/run_full_motion.sh` now defaults to this config and the separate output
+directory `runs/coffee_full_motion_enhanced`, preserving older run directories.
+
+```bash
+python full_sequence.py --config configs/coffee_full_motion_enhanced.json \
+  --out runs/coffee_full_motion_enhanced
+python evaluate.py --checkpoint runs/coffee_full_motion_enhanced/best.pt \
+  --out runs/coffee_full_motion_enhanced_reloaded
+```
+
+- **Appearance:** each Gaussian has degree-1/2 real SH residual coefficients for
+  camera direction in world coordinates. The constant term remains the existing
+  RGB logit. A separate rank-1/2 temporal logit residual is zero at reference time
+  and bounded to +/-0.1 in total. Both residuals start at zero and have coefficient
+  L2 penalties. Defaults: SH degree 2, time rank 2, SH weight 0.0001, time weight
+  0.01. Opacity remains time-independent. SH is evaluated before rasterization,
+  so CUDA and reference renderers receive the same per-view colors; the CUDA
+  adapter's internal SH degree 0 does not disable this model's SH residuals.
+- **Preparation:** jointly refine reference positions, covariance factors,
+  velocity and appearance using only frames 0, 59, 119, 179, 239 and 299 and training
+  cameras. The preset uses 2400 additional updates. Accumulated reference-position
+  gradients across complete frame cycles select splits every 480 updates through
+  update 1440, at most 5% per split and 220000 Gaussians total. Splits inherit
+  appearance coefficients and record retired/child/parent IDs. Adam is reset after
+  parameter shapes change. The last 960 updates refine the resulting geometry.
+  Position LR is 0.00001 times camera extent, shape LR 0.0001. These are starting
+  settings, not validated coffee_martini optima.
+- **Freeze and resume:** after preparation, reference geometry and IDs are frozen;
+  the following 12000-step motion stage updates velocity and appearance only.
+  `preparation_latest.pt` stores geometry, appearance, accumulated split scores,
+  lineage, optimizer and RNG state. `latest.pt`/`best.pt` belong to the frozen
+  motion phase. The wrapper resumes either phase, preferring a motion checkpoint.
+  `preparation.json` reports before/after training-monitor metrics and ancestry;
+  `frozen_geometry.json` records the final ID set. The original 32 dB gate is a
+  pre-preparation check, not a claim that all later geometries retain 32 dB.
+- **Evaluation and compatibility:** the training monitor, final evaluation and
+  standalone `evaluate.py` share the same appearance/model construction. New
+  checkpoints identify their format as `full_sequence_v2`. Older full-sequence
+  checkpoints without the new options retain constant appearance; architecture
+  changes require a new run from the static reference, not an optimizer resume
+  under a changed config. To resume the original preset through the wrapper, set
+  `NEW4DGS_MOTION_CONFIG=configs/coffee_full_motion.json` and
+  `NEW4DGS_MOTION_OUTPUT=runs/coffee_full_motion`.
+
+Tests cover zero-residual compatibility, view/time color fitting, temporal bounds,
+geometry gradients through checkpointed ODE integration, split inheritance,
+fixed geometry/IDs after preparation, holdout exclusion, interrupted resumes and
+exact image-metric agreement after checkpoint reload. The synthetic integration
+scene is deliberately tiny. These checks do not establish real-sequence PSNR,
+GPU memory use at 220000 points or correct material trajectories. Preparation
+adds capacity by refining/splitting existing Gaussians; it does not independently
+triangulate new disconnected surfaces or guarantee recovery of unsupported areas.
